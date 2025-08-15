@@ -1,0 +1,3264 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>发布文章 - 世界指南</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- 引入Font Awesome图标 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- 添加highlight.js库用于代码高亮 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <!-- 添加marked.js库用于Markdown解析 - 使用直接加载方式 -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+        }
+        
+        body {
+            background-color: #0c0c14;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+        
+        /* 背景动画效果 */
+        .background-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        .gradient-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 15% 50%, #170a3a, transparent 25%),
+                         radial-gradient(circle at 85% 30%, #260f4c, transparent 25%);
+            opacity: 0.4;
+        }
+        
+        .stars {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .star {
+            position: absolute;
+            background-color: #fff;
+            border-radius: 50%;
+            opacity: 0;
+            animation: twinkle 2s infinite ease-in-out;
+        }
+        
+        @keyframes twinkle {
+            0% { opacity: 0; }
+            50% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+        
+        /* 导航栏样式 */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 50px;
+            background-color: rgba(12, 12, 20, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            color: #fff;
+            font-weight: 500;
+            font-size: 22px;
+            text-decoration: none;
+            position: relative;
+        }
+        
+        .logo svg {
+            margin-right: 10px;
+            fill: #9747FF;
+        }
+        
+        .logo::after {
+            content: '';
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: radial-gradient(circle, rgba(147, 112, 219, 0.5), transparent 70%);
+            border-radius: 50%;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 0;
+            filter: blur(5px);
+        }
+        
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .nav-btn {
+            background: none;
+            border: none;
+            font-size: 15px;
+            color: rgba(255, 255, 255, 0.7);
+            cursor: pointer;
+            padding: 8px 16px;
+            border-radius: 6px;
+            transition: all 0.3s;
+            border: 1px solid transparent;
+        }
+        
+        .nav-btn:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .publish-btn {
+            padding: 8px 20px;
+            background: linear-gradient(45deg, #7336f0, #9747FF);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+            position: relative;
+            overflow: hidden;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .publish-btn::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(transparent, rgba(255, 255, 255, 0.1), transparent);
+            transform: rotate(30deg);
+            transition: all 0.5s;
+            opacity: 0;
+        }
+        
+        .publish-btn:hover {
+            box-shadow: 0 0 15px rgba(147, 112, 219, 0.5);
+            transform: translateY(-2px);
+        }
+        
+        .publish-btn:hover::before {
+            opacity: 1;
+            left: 100%;
+            top: 100%;
+            transition: all 0.5s;
+        }
+        
+        /* 主编辑区域 */
+        .editor-container {
+            display: flex;
+            flex: 1;
+            max-width: 1400px;
+            margin: 30px auto;
+            padding: 0 30px;
+            gap: 30px;
+        }
+        
+        .editor-main {
+            flex: 3;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: calc(100vh - 150px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .editor-sidebar {
+            flex: 1;
+            position: sticky;
+            top: 100px;
+            height: fit-content;
+        }
+        
+        .sidebar-card {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .sidebar-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+        }
+        
+        .sidebar-title i {
+            margin-right: 8px;
+            color: #9747FF;
+        }
+        
+        /* 文章标题输入 */
+        .title-input {
+            border: none;
+            outline: none;
+            font-size: 28px;
+            font-weight: 600;
+            padding: 30px 40px 20px;
+            width: 100%;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            background: transparent;
+            color: #fff;
+        }
+        
+        .title-input::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+        
+        /* 覆盖浏览器自动填充的背景和文字颜色 */
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover, 
+        input:-webkit-autofill:focus,
+        input:-webkit-autofill:active {
+            -webkit-box-shadow: 0 0 0 30px #0c0c14 inset !important;
+            -webkit-text-fill-color: #fff !important;
+            transition: background-color 5000s ease-in-out 0s;
+            caret-color: #fff;
+        }
+        
+        /* 处理Firefox等其他浏览器的自动填充 */
+        input:autofill,
+        input:autofill:hover, 
+        input:autofill:focus,
+        input:autofill:active {
+            box-shadow: 0 0 0 30px #0c0c14 inset !important;
+            -webkit-text-fill-color: #fff !important;
+            caret-color: #fff;
+        }
+        
+        .category-select:-webkit-autofill,
+        .category-select:autofill {
+            background-color: #0c0c14 !important;
+            color: #fff !important;
+        }
+        
+        /* 内容编辑区 */
+        .content-area {
+            flex: 1;
+            padding: 20px 40px;
+            overflow-y: auto;
+        }
+        
+        /* 内容块容器样式 */
+        .content-block {
+            position: relative;
+            margin-bottom: 15px;
+            transition: all 0.2s ease;
+        }
+        
+        .content-block:hover {
+            background-color: rgba(255, 255, 255, 0.03);
+        }
+        
+        .content-block:hover .block-actions {
+            opacity: 1;
+        }
+        
+        .block-actions {
+            position: absolute;
+            left: -40px;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0;
+            transition: opacity 0.2s;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .block-handle {
+            background: none;
+            border: none;
+            cursor: grab;
+            color: rgba(255, 255, 255, 0.3);
+            padding: 4px;
+            width: 28px;
+            height: 28px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        
+        .block-handle:hover {
+            color: rgba(255, 255, 255, 0.8);
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+        
+        .block-delete {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: rgba(255, 255, 255, 0.3);
+            padding: 4px;
+            width: 28px;
+            height: 28px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        
+        .block-delete:hover {
+            color: #ff5252;
+            background-color: rgba(255, 82, 82, 0.1);
+        }
+        
+        /* 拖拽时的样式 */
+        .block-container.dragging {
+            opacity: 0.5;
+            border: 1px dashed rgba(151, 71, 255, 0.5);
+        }
+        
+        .drag-placeholder {
+            height: 2px;
+            background-color: #9747FF;
+            margin: 10px 0;
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 0.5; }
+            50% { opacity: 1; }
+            100% { opacity: 0.5; }
+        }
+        
+        .content-block {
+            width: 100%;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            padding: 10px;
+            transition: all 0.2s;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .content-block:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.1);
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+        
+        .text-block {
+            font-size: 16px;
+            line-height: 1.6;
+            min-height: 42px;
+        }
+        
+        /* 添加预览模式的样式 */
+        .text-block.preview-mode {
+            cursor: pointer;
+        }
+        
+        .text-block.preview-mode .markdown-preview {
+            padding: 5px;
+        }
+        
+        .text-block.preview-mode .markdown-preview h1 {
+            font-size: 1.8em;
+            margin: 0.8em 0 0.4em;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 0.2em;
+        }
+        
+        .text-block.preview-mode .markdown-preview h2 {
+            font-size: 1.5em;
+            margin: 0.8em 0 0.4em;
+        }
+        
+        .text-block.preview-mode .markdown-preview h3 {
+            font-size: 1.3em;
+            margin: 0.6em 0 0.3em;
+        }
+        
+        .text-block.preview-mode .markdown-preview ul, 
+        .text-block.preview-mode .markdown-preview ol {
+            padding-left: 2em;
+            margin: 0.5em 0;
+        }
+        
+        .text-block.preview-mode .markdown-preview blockquote {
+            border-left: 3px solid #9747FF;
+            padding-left: 1em;
+            margin: 0.5em 0;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .text-block.preview-mode .markdown-preview code {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 0.2em 0.4em;
+            border-radius: 3px;
+            font-family: monospace;
+            color: #b68aff;
+        }
+        
+        .text-block.preview-mode .markdown-preview pre code {
+            display: block;
+            padding: 1em;
+            overflow-x: auto;
+            line-height: 1.5;
+        }
+        
+        .text-block.preview-mode .markdown-preview p {
+            margin: 0.5em 0;
+        }
+        
+        .text-block.preview-mode .markdown-preview a {
+            color: #9747FF;
+            text-decoration: none;
+        }
+        
+        .text-block.preview-mode .markdown-preview a:hover {
+            text-decoration: underline;
+        }
+        
+        .heading-block {
+            font-size: 20px;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+        
+        /* 添加块按钮 */
+        .add-block-btn {
+            width: 100%;
+            text-align: center;
+            padding: 10px;
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 14px;
+            cursor: pointer;
+            margin: 10px 0;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        
+        .add-block-btn:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: #9747FF;
+        }
+        
+        .add-block-menu {
+            position: absolute;
+            background: rgba(20, 20, 30, 0.95);
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 10px 0;
+            z-index: 1000;
+            width: 200px;
+            display: none;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+        }
+        
+        .add-block-menu.show {
+            display: block;
+        }
+        
+        .block-type-btn {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            text-align: left;
+            padding: 8px 15px;
+            background: none;
+            border: none;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .block-type-btn:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: #fff;
+        }
+        
+        .block-type-btn i {
+            margin-right: 10px;
+            color: #9747FF;
+            width: 20px;
+            text-align: center;
+        }
+        
+        /* 文章封面上传 */
+        .cover-upload {
+            position: relative;
+            width: 100%;
+            height: 160px;
+            background-color: rgba(255, 255, 255, 0.02);
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px dashed rgba(255, 255, 255, 0.1);
+        }
+        
+        .cover-upload:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .cover-upload img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .cover-placeholder {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .cover-placeholder i {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #9747FF;
+        }
+        
+        /* 分类选择 */
+        .category-select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 15px;
+            color: #fff;
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+        
+        .category-select option {
+            background-color: #14141e;
+            color: #fff;
+        }
+        
+        /* 标签输入 */
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            background-color: rgba(147, 112, 219, 0.15);
+            color: rgba(255, 255, 255, 0.8);
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            border: 1px solid rgba(147, 112, 219, 0.3);
+        }
+        
+        .tag i {
+            margin-left: 6px;
+            cursor: pointer;
+            font-size: 10px;
+        }
+        
+        .tag i:hover {
+            color: #ff5252;
+        }
+        
+        .tag-input {
+            flex: 1;
+            min-width: 100px;
+            padding: 8px 4px;
+            border: none;
+            outline: none;
+            background: transparent;
+            font-size: 14px;
+            color: #fff;
+        }
+        
+        /* 工具栏 */
+        .formatting-toolbar {
+            padding: 10px 15px;
+            background-color: rgba(255, 255, 255, 0.02);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+        
+        .format-btn {
+            background: none;
+            border: none;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+            cursor: pointer;
+            padding: 6px 10px;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        
+        .format-btn:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: #9747FF;
+        }
+        
+        .format-btn.active {
+            background-color: rgba(147, 112, 219, 0.15);
+            color: #9747FF;
+        }
+        
+        .format-btn i {
+            margin-right: 5px;
+        }
+        
+        .format-separator {
+            width: 1px;
+            height: 24px;
+            background-color: rgba(255, 255, 255, 0.1);
+            margin: 0 5px;
+        }
+        
+        /* 通知消息 */
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: rgba(20, 20, 30, 0.9);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 1000;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .notification.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .notification i {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+        
+        .notification.success {
+            background-color: rgba(76, 175, 80, 0.9);
+            border-color: rgba(76, 175, 80, 0.3);
+        }
+        
+        .notification.error {
+            background-color: rgba(255, 82, 82, 0.9);
+            border-color: rgba(255, 82, 82, 0.3);
+        }
+        
+        /* 图片上传占位符 */
+        .image-upload-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 150px;
+            background-color: rgba(255, 255, 255, 0.02);
+            border-radius: 8px;
+            border: 1px dashed rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .image-upload-placeholder:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .image-upload-placeholder i {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #9747FF;
+        }
+        
+        /* 代码块和引用块样式 */
+        .code-block {
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 6px;
+            font-family: monospace;
+            color: #b68aff;
+            position: relative;
+            padding: 10px;
+        }
+        
+        .code-block pre {
+            margin: 0;
+        }
+        
+        .code-block code {
+            min-height: 100px; /* 确保至少有4行的空间 */
+            display: block;
+            line-height: 1.5;
+            white-space: pre-wrap;
+        }
+        
+        .code-lang-selector {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: rgba(151, 71, 255, 0.2);
+            border: 1px solid rgba(151, 71, 255, 0.3);
+            color: #fff;
+            padding: 5px;
+            border-radius: 4px;
+            font-size: 12px;
+            z-index: 5;
+        }
+        
+        .code-lang-selector option {
+            background-color: #14141e;
+            color: #fff;
+        }
+        
+        /* 语法高亮容器 */
+        .hljs {
+            background-color: transparent !important;
+            padding: 0 !important;
+        }
+        
+        pre {
+            margin: 0;
+            padding: 0;
+        }
+        
+        .quote-block {
+            border-left: 3px solid #9747FF;
+            background-color: rgba(151, 71, 255, 0.05);
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 992px) {
+            .editor-container {
+                flex-direction: column;
+                padding: 20px;
+            }
+            
+            .editor-sidebar {
+                position: static;
+                order: -1;
+                margin-bottom: 20px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .title-input {
+                padding: 20px;
+                font-size: 24px;
+            }
+            
+            .content-area {
+                padding: 15px 20px;
+            }
+            
+            .navbar {
+                padding: 15px 20px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .nav-actions {
+                gap: 10px;
+            }
+            
+            .publish-btn {
+                padding: 6px 12px;
+                font-size: 14px;
+            }
+        }
+        
+        /* 预览模态框样式 */
+        .preview-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+        }
+        
+        .preview-modal-content {
+            background-color: #0c0c14;
+            margin: 30px auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            width: 80%;
+            max-width: 1200px;
+            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3);
+            animation: modalFadeIn 0.3s;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        @keyframes modalFadeIn {
+            from {opacity: 0; transform: translateY(-30px);}
+            to {opacity: 1; transform: translateY(0);}
+        }
+        
+        .preview-modal-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .preview-modal-header h2 {
+            margin: 0;
+            color: #fff;
+            font-size: 1.5rem;
+        }
+        
+        .preview-close-btn {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 28px;
+            font-weight: bold;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .preview-close-btn:hover {
+            color: #fff;
+        }
+        
+        .preview-modal-body {
+            padding: 20px;
+            overflow-y: auto;
+            flex: 1;
+        }
+        
+        .preview-article {
+            max-width: 800px;
+            margin: 0 auto;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .preview-title {
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+            color: #fff;
+            line-height: 1.3;
+        }
+        
+        .preview-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 30px;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .preview-content {
+            font-size: 1.05rem;
+            line-height: 1.7;
+            margin-bottom: 30px;
+        }
+        
+        .preview-content img {
+            max-width: 100%;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        
+        .preview-content blockquote {
+            border-left: 4px solid #9747FF;
+            padding: 10px 20px;
+            margin: 20px 0;
+            background: rgba(151, 71, 255, 0.05);
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .preview-content h2 {
+            font-size: 1.8rem;
+            margin: 30px 0 15px;
+            color: #fff;
+        }
+        
+        .preview-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 30px;
+        }
+        
+        .preview-tag {
+            background: rgba(151, 71, 255, 0.1);
+            color: #b68aff;
+            padding: 5px 15px;
+            border-radius: 100px;
+            font-size: 0.8rem;
+            border: 1px solid rgba(151, 71, 255, 0.2);
+        }
+        
+        /* Markdown开关样式 */
+        #markdown-toggle {
+            background: none;
+            border: none;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+            cursor: pointer;
+            padding: 6px 10px;
+            border-radius: 4px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        #markdown-toggle:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: #9747FF;
+        }
+        
+        #markdown-toggle.active {
+            background-color: rgba(147, 112, 219, 0.15);
+            color: #9747FF;
+        }
+        
+        #markdown-toggle i {
+            margin-right: 5px;
+        }
+        
+        /* B站视频块样式 */
+        .bilibili-block {
+            background-color: rgba(251, 114, 153, 0.05);
+            border-radius: 8px;
+            padding: 15px;
+            border: 1px solid rgba(251, 114, 153, 0.2);
+        }
+        
+        .bilibili-input-container {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .bilibili-input {
+            flex: 1;
+            background-color: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .bilibili-add-btn {
+            background-color: #FB7299;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 8px 15px;
+            margin-left: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        
+        .bilibili-add-btn:hover {
+            background-color: #FC8BAA;
+        }
+        
+        .bilibili-player-container {
+            position: relative;
+            width: 100%;
+            padding-top: 56.25%; /* 16:9 比例 */
+            overflow: hidden;
+            border-radius: 8px;
+        }
+        
+        .bilibili-player-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        .bilibili-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(0, 0, 0, 0.2);
+            padding: 30px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .bilibili-placeholder i {
+            font-size: 40px;
+            color: #FB7299;
+            margin-bottom: 15px;
+        }
+        
+        .bilibili-placeholder p {
+            color: rgba(255, 255, 255, 0.8);
+            margin: 5px 0;
+        }
+        
+        .bilibili-placeholder .example {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.5);
+            margin-top: 10px;
+        }
+        
+        /* 块间添加按钮样式 */
+        .block-spacer {
+            position: relative;
+            height: 10px;
+            margin: 5px 0;
+            transition: all 0.2s ease;
+        }
+        
+        .block-spacer:hover {
+            height: 28px;
+        }
+        
+        .block-spacer:hover .spacer-add-btn {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .spacer-add-btn {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%) translateY(-10px);
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #9747FF;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: all 0.2s ease;
+            border: none;
+            box-shadow: 0 2px 8px rgba(151, 71, 255, 0.4);
+            z-index: 10;
+        }
+        
+        .spacer-add-btn:hover {
+            background-color: #8a35f7;
+            transform: translate(-50%, -50%) scale(1.1);
+        }
+        
+        .block-add-btn {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: rgba(151, 71, 255, 0.8);
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: all 0.2s;
+            z-index: 5;
+        }
+        
+        .block-add-btn:hover {
+            background-color: #9747FF;
+            transform: translate(-50%, -50%) scale(1.1);
+            box-shadow: 0 0 10px rgba(151, 71, 255, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="background-animation">
+        <div class="gradient-bg"></div>
+        <div class="stars"></div>
+    </div>
+    
+    <header class="navbar">
+        <a href="{{ url_for('auth.home_page') }}" class="logo">
+            <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 3L3 8.6v6.8L12 21l9-5.6V8.6L12 3z"/>
+                <circle cx="12" cy="12" r="2"/>
+            </svg>
+            世界指南
+        </a>
+        
+        <div class="nav-actions">
+            <button type="button" class="nav-btn" id="save-draft-btn">
+                <i class="fas fa-save"></i> 保存草稿
+            </button>
+            <button type="button" class="nav-btn" id="preview-btn">
+                <i class="fas fa-eye"></i> 预览
+            </button>
+            <button type="button" class="publish-btn" id="publish-btn">
+                <i class="fas fa-paper-plane"></i> 发布文章
+            </button>
+        </div>
+    </header>
+    
+    <main class="editor-container">
+        <section class="editor-main">
+            <div class="formatting-toolbar">
+                <button type="button" class="format-btn" data-format="heading">
+                    <i class="fas fa-heading"></i> 标题
+                </button>
+                <button type="button" class="format-btn" data-format="bold">
+                    <i class="fas fa-bold"></i> 加粗
+                </button>
+                <button type="button" class="format-btn" data-format="italic">
+                    <i class="fas fa-italic"></i> 斜体
+                </button>
+                <button type="button" class="format-btn" data-format="underline">
+                    <i class="fas fa-underline"></i> 下划线
+                </button>
+                
+                <div class="format-separator"></div>
+                
+                <button type="button" class="format-btn" data-format="list-ul">
+                    <i class="fas fa-list-ul"></i> 无序列表
+                </button>
+                <button type="button" class="format-btn" data-format="list-ol">
+                    <i class="fas fa-list-ol"></i> 有序列表
+                </button>
+                
+                <div class="format-separator"></div>
+                
+                <button type="button" class="format-btn" data-format="image">
+                    <i class="fas fa-image"></i> 图片
+                </button>
+                <button type="button" class="format-btn" data-format="link">
+                    <i class="fas fa-link"></i> 链接
+                </button>
+                <button type="button" class="format-btn" data-format="code">
+                    <i class="fas fa-code"></i> 代码
+                </button>
+                <button type="button" class="format-btn" data-format="quote">
+                    <i class="fas fa-quote-left"></i> 引用
+                </button>
+                
+                <div class="format-separator"></div>
+                
+                <button type="button" class="format-btn" id="markdown-toggle" title="切换Markdown/普通文本模式">
+                    <i class="fab fa-markdown"></i> Markdown
+                </button>
+            </div>
+            
+            <input type="text" class="title-input" id="article-title" placeholder="请输入文章标题..." maxlength="100" autocomplete="off">
+            
+            <div class="content-area" id="content-area">
+                <div class="block-container" data-block-id="block-1">
+                    <div class="block-actions">
+                        <button type="button" class="block-handle" title="拖动调整位置">
+                            <i class="fas fa-grip-lines"></i>
+                        </button>
+                        <button type="button" class="block-delete" title="删除此内容块">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    <div class="content-block text-block" contenteditable="true" data-placeholder="开始输入正文内容，也可以点击下方+按钮添加其他类型的内容..."></div>
+                </div>
+                
+                <button type="button" class="add-block-btn" id="add-block-btn">
+                    <i class="fas fa-plus"></i> 添加内容块
+                </button>
+                
+                <div class="add-block-menu" id="block-menu">
+                    <button type="button" class="block-type-btn" data-block-type="text">
+                        <i class="fas fa-paragraph"></i> 文本段落
+                    </button>
+                    <button type="button" class="block-type-btn" data-block-type="image">
+                        <i class="fas fa-image"></i> 图片
+                    </button>
+                    <button type="button" class="block-type-btn" data-block-type="code">
+                        <i class="fas fa-code"></i> 代码块
+                    </button>
+                    <button type="button" class="block-type-btn" data-block-type="bilibili">
+                        <i class="fab fa-bilibili"></i> B站视频
+                    </button>
+                </div>
+            </div>
+        </section>
+        
+        <aside class="editor-sidebar">
+            <div class="sidebar-card">
+                <h3 class="sidebar-title"><i class="fas fa-image"></i> 文章封面</h3>
+                <div class="cover-upload" id="cover-upload">
+                    <div class="cover-placeholder" id="cover-placeholder">
+                        <i class="fas fa-upload"></i>
+                        <span>上传封面图片</span>
+                    </div>
+                    <img id="cover-preview" style="display: none;">
+                </div>
+                <input type="file" id="cover-input" style="display: none;" accept="image/*">
+            </div>
+            
+            <div class="sidebar-card">
+                <h3 class="sidebar-title"><i class="fas fa-folder"></i> 文章分类</h3>
+                <select class="category-select" id="article-category">
+                    <option value="">请选择分类</option>
+                    <option value="technology">科技</option>
+                    <option value="culture">文化</option>
+                    <option value="travel">旅行</option>
+                    <option value="food">美食</option>
+                    <option value="health">健康</option>
+                    <option value="education">教育</option>
+                    <option value="finance">金融</option>
+                    <option value="other">其他</option>
+                </select>
+            </div>
+            
+            <div class="sidebar-card">
+                <h3 class="sidebar-title"><i class="fas fa-tags"></i> 添加标签</h3>
+                <div class="tags-container" id="tags-container">
+                    <input type="text" class="tag-input" id="tag-input" placeholder="输入标签按回车添加" maxlength="20">
+                </div>
+                <small style="color: rgba(255, 255, 255, 0.5)">最多添加5个标签，每个标签不超过20个字符</small>
+            </div>
+        </aside>
+    </main>
+    
+    <div class="notification" id="notification">
+        <i class="fas fa-check-circle"></i>
+        <span id="notification-text">文章已保存为草稿</span>
+    </div>
+    
+    <!-- 文章预览模态框 -->
+    <div class="preview-modal" id="previewModal">
+        <div class="preview-modal-content">
+            <div class="preview-modal-header">
+                <h2>文章预览</h2>
+                <button class="preview-close-btn" id="previewCloseBtn">&times;</button>
+            </div>
+            <div class="preview-modal-body">
+                <div class="preview-article">
+                    <h1 class="preview-title" id="previewTitle"></h1>
+                    <div class="preview-meta">
+                        <span class="preview-author">作者: {{ session.get('username', '未知用户') }}</span>
+                        <span class="preview-date">日期: <span id="previewDate"></span></span>
+                        <span class="preview-category">分类: <span id="previewCategory"></span></span>
+                    </div>
+                    <div class="preview-content" id="previewContent"></div>
+                    <div class="preview-tags" id="previewTags"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <form id="publish-form" style="display: none;">
+        <input type="hidden" id="article-content-data">
+        <input type="hidden" id="article-tags-data">
+    </form>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 获取DOM元素
+            const addBlockBtn = document.getElementById('add-block-btn');
+            const blockMenu = document.getElementById('block-menu');
+            const contentArea = document.getElementById('content-area');
+            const tagInput = document.getElementById('tag-input');
+            const tagsContainer = document.getElementById('tags-container');
+            const coverUpload = document.getElementById('cover-upload');
+            const coverInput = document.getElementById('cover-input');
+            const coverPreview = document.getElementById('cover-preview');
+            const coverPlaceholder = document.getElementById('cover-placeholder');
+            const saveDraftBtn = document.getElementById('save-draft-btn');
+            const publishBtn = document.getElementById('publish-btn');
+            const notification = document.getElementById('notification');
+            const notificationText = document.getElementById('notification-text');
+            const publishForm = document.getElementById('publish-form');
+            const articleContentData = document.getElementById('article-content-data');
+            const articleTagsData = document.getElementById('article-tags-data');
+            
+            // 设置全局Markdown模式状态 - 默认启用
+            window.markdownModeEnabled = true;
+            
+            // 设置Markdown开关按钮样式
+            const markdownToggleBtn = document.getElementById('markdown-toggle');
+            if (window.markdownModeEnabled) {
+                markdownToggleBtn.classList.add('active');
+            }
+            
+            // 添加Markdown开关事件
+            markdownToggleBtn.addEventListener('click', function() {
+                window.markdownModeEnabled = !window.markdownModeEnabled;
+                
+                if (window.markdownModeEnabled) {
+                    this.classList.add('active');
+                    showNotification('Markdown模式已开启', 'success');
+                    
+                    // 对当前所有文本块应用Markdown预览
+                    document.querySelectorAll('.text-block:not(.preview-mode)').forEach(block => {
+                        const content = block.innerHTML;
+                        if (content && content.trim() !== '') {
+                            switchToPreviewMode(block, content);
+                        } else {
+                            // 对于空文本块，更新占位符提示
+                            block.setAttribute('data-original-placeholder', block.getAttribute('data-placeholder') || '');
+                            block.setAttribute('data-placeholder', '开始输入Markdown内容...');
+                        }
+                    });
+                } else {
+                    this.classList.remove('active');
+                    showNotification('Markdown模式已关闭', 'success');
+                    
+                    // 将所有预览模式的文本块转回编辑模式
+                    document.querySelectorAll('.text-block.preview-mode').forEach(block => {
+                        switchToEditMode(block);
+                    });
+                    
+                    // 恢复原始占位符
+                    document.querySelectorAll('.text-block:not(.preview-mode)').forEach(block => {
+                        if (block.getAttribute('data-original-placeholder')) {
+                            block.setAttribute('data-placeholder', block.getAttribute('data-original-placeholder'));
+                        }
+                    });
+                }
+            });
+            
+            // 初始化marked.js配置
+            if (typeof marked === 'function' || typeof marked?.parse === 'function') {
+                console.log('marked.js库已加载，正在初始化...');
+                // 配置marked选项
+                marked.setOptions({
+                    breaks: true,  // 启用换行符转换为<br>
+                    gfm: true,     // 启用GitHub风格Markdown
+                    headerIds: true,
+                    mangle: false
+                });
+            } else {
+                console.error('marked.js库未加载，正在尝试重新加载...');
+                // 尝试动态重新加载library
+                loadScript('https://cdn.jsdelivr.net/npm/marked/marked.min.js', function() {
+                    console.log('marked.js库加载成功');
+                    if (typeof marked === 'function' || typeof marked?.parse === 'function') {
+                        marked.setOptions({
+                            breaks: true,
+                            gfm: true,
+                            headerIds: true,
+                            mangle: false
+                        });
+                    }
+                });
+            }
+            
+            // 辅助函数：动态加载脚本
+            function loadScript(url, callback) {
+                const script = document.createElement('script');
+                script.type = 'text/javascript';
+                script.src = url;
+                script.onload = callback;
+                script.onerror = function() {
+                    console.error('加载脚本失败:', url);
+                    showNotification('Markdown功能加载失败，某些功能可能不可用', 'error');
+                };
+                document.head.appendChild(script);
+            }
+            
+            // 创建星星背景
+            createStars();
+            
+            // 处理初始文本框
+            initializeFirstTextBlock();
+            
+            // 初始化块间隔
+            initBlockSpacers();
+            
+            // 初始化拖拽支持
+            initDragAndDrop();
+            
+            // 阻止浏览器自动填充更改输入框样式
+            const titleInput = document.getElementById('article-title');
+            
+            // 方法1: 焦点事件时保护样式
+            titleInput.addEventListener('focus', function() {
+                // 延迟执行确保在浏览器应用样式后覆盖
+                setTimeout(() => {
+                    this.style.backgroundColor = 'transparent';
+                    this.style.color = '#fff';
+                }, 10);
+            });
+            
+            // 方法2: 使用MutationObserver监视样式变化
+            const observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    if (mutation.attributeName === 'style') {
+                        const bgColor = titleInput.style.backgroundColor;
+                        if (bgColor && bgColor !== 'transparent') {
+                            titleInput.style.backgroundColor = 'transparent';
+                            titleInput.style.color = '#fff';
+                        }
+                    }
+                });
+            });
+            
+            observer.observe(titleInput, { attributes: true });
+            
+            // 块ID计数器
+            let blockIdCounter = 2;
+            let tags = [];
+            
+            // 加载草稿内容
+            {% if draft %}
+                // 填充标题和分类
+                document.getElementById('article-title').value = "{{ draft.title|default('') }}";
+                document.getElementById('article-category').value = "{{ draft.category|default('') }}";
+                
+                // 加载标签
+                {% if draft.tags %}
+                    tags = {{ draft.tags|tojson }};
+                    renderTags();
+                {% endif %}
+                
+                // 加载内容
+                {% if draft.content %}
+                    // 清除默认的内容块
+                    const defaultBlock = document.querySelector('.block-container');
+                    if (defaultBlock) {
+                        defaultBlock.remove();
+                    }
+                    
+                    // 创建临时容器解析内容
+                    const tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = {{ draft.content|tojson|safe }};
+                    
+                    // 遍历解析后的元素创建内容块
+                    Array.from(tempDiv.children).forEach(el => {
+                        if (el.tagName === 'P') {
+                            addNewContentBlock('text', el.innerHTML);
+                        } else if (el.tagName === 'H2') {
+                            addNewContentBlock('heading', el.innerHTML);
+                        } else if (el.tagName === 'BLOCKQUOTE') {
+                            addNewContentBlock('quote', el.innerHTML);
+                        } else if (el.tagName === 'PRE') {
+                            const codeEl = el.querySelector('code');
+                            if (codeEl) {
+                                // 获取语言类
+                                let language = '';
+                                if (codeEl.className) {
+                                    const match = codeEl.className.match(/language-(\w+)/);
+                                    if (match && match[1]) {
+                                        language = match[1];
+                                    }
+                                }
+                                addNewContentBlock('code', codeEl.innerHTML, language);
+                            } else {
+                                addNewContentBlock('code', el.innerHTML);
+                            }
+                        } else if (el.tagName === 'HR') {
+                            addNewContentBlock('divider');
+                        } else if (el.classList.contains('article-image')) {
+                            const img = el.querySelector('img');
+                            if (img && img.src) {
+                                addNewContentBlock('image', img.src);
+                            }
+                        }
+                    });
+                {% endif %}
+            {% endif %}
+            
+            // 添加新的内容块菜单
+            addBlockBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const buttonRect = this.getBoundingClientRect();
+                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+                
+                // 计算菜单位置，考虑滚动偏移
+                let menuTop = buttonRect.bottom + scrollTop;
+                let menuLeft = buttonRect.left + scrollLeft;
+                
+                // 确保菜单不会显示在屏幕右侧边缘之外
+                const menuWidth = 200; // .add-block-menu 的宽度
+                const viewportWidth = window.innerWidth;
+                if (menuLeft + menuWidth > viewportWidth) {
+                    menuLeft = viewportWidth - menuWidth - 10; // 留10px边距
+                }
+                
+                // 确保菜单不会显示在屏幕左侧边缘之外
+                if (menuLeft < 10) {
+                    menuLeft = 10;
+                }
+                
+                blockMenu.style.position = 'absolute';
+                blockMenu.style.top = menuTop + 'px';
+                blockMenu.style.left = menuLeft + 'px';
+                blockMenu.classList.add('show');
+                
+                // 提示用户可以添加Markdown块
+                if (window.markdownModeEnabled) {
+                    // 临时改变按钮外观提醒用户
+                    this.innerHTML = '<i class="fas fa-plus"></i> 添加Markdown文本块';
+                    this.style.color = '#9747FF';
+                    
+                    // 恢复原样
+                    setTimeout(() => {
+                        this.innerHTML = '<i class="fas fa-plus"></i> 添加内容块';
+                        this.style.color = '';
+                    }, 1500);
+                }
+            });
+            
+            // 点击其他地方关闭菜单
+            document.addEventListener('click', function() {
+                blockMenu.classList.remove('show');
+            });
+            
+            // 阻止菜单内部点击关闭
+            blockMenu.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+            
+            // 选择内容块类型
+            const blockTypeButtons = document.querySelectorAll('.block-type-btn');
+            blockTypeButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const blockType = this.getAttribute('data-block-type');
+                    
+                    // 如果有活动分隔符，则在该位置插入
+                    if (window.activeBlockSpacer) {
+                        const previousBlock = window.activeBlockSpacer.previousElementSibling;
+                        addNewBlockAtPosition(blockType, previousBlock);
+                        
+                        // 重置活动分隔符
+                        window.activeBlockSpacer = null;
+                    } else {
+                        // 正常添加
+                        addNewBlock(blockType);
+                    }
+                    
+                    blockMenu.classList.remove('show');
+                });
+            });
+            
+            // 添加新的内容块(原函数)
+            function addNewContentBlock(blockType, initialContent = '', language = '') {
+                // 创建新的区块ID
+                const blockId = 'block-' + blockIdCounter++;
+                const blockContainer = document.createElement('div');
+                blockContainer.className = 'block-container';
+                blockContainer.setAttribute('data-block-id', blockId);
+                blockContainer.setAttribute('draggable', 'true');
+                
+                // 创建操作按钮
+                const blockActions = document.createElement('div');
+                blockActions.className = 'block-actions';
+                blockActions.innerHTML = `
+                    <button type="button" class="block-handle" title="拖动调整位置">
+                        <i class="fas fa-grip-lines"></i>
+                    </button>
+                    <button type="button" class="block-delete" title="删除此内容块">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                `;
+                
+                let contentBlock;
+                
+                switch(blockType) {
+                    case 'text':
+                        contentBlock = document.createElement('div');
+                        contentBlock.className = 'content-block text-block';
+                        contentBlock.setAttribute('contenteditable', 'true');
+                        contentBlock.setAttribute('data-placeholder', '输入文本内容...');
+                        contentBlock.innerHTML = initialContent;
+                        
+                        // 使用函数而不是匿名函数，以便于移除
+                        const blurHandler = function() {
+                            console.log("失焦事件触发");
+                            const content = this.innerHTML;
+                            if (content && content.trim() !== '') {
+                                // 如果启用了Markdown模式，或者检测到Markdown内容，则应用预览
+                                if (window.markdownModeEnabled || isMarkdownContent(content)) {
+                                    // 检查marked是否可用
+                                    if (typeof marked !== 'function' && typeof marked?.parse !== 'function') {
+                                        console.warn("Markdown转换需要marked.js库，正在尝试加载...");
+                                        loadScript('https://cdn.jsdelivr.net/npm/marked/marked.min.js', function() {
+                                            switchToPreviewMode(contentBlock, content);
+                                        });
+                                    } else {
+                                        switchToPreviewMode(this, content);
+                                    }
+                                }
+                            }
+                        };
+                        
+                        // 为文本块添加blur事件监听，在失焦时切换到预览模式
+                        contentBlock.addEventListener('blur', blurHandler);
+                        
+                        // 存储事件处理函数引用以便于后续移除
+                        contentBlock.blurHandler = blurHandler;
+                        
+                        // 一开始如果有内容，自动检查是否应用预览
+                        if (initialContent && initialContent.trim() !== '') {
+                            console.log("检查初始内容:", initialContent);
+                            setTimeout(() => {
+                                // 如果开启了Markdown模式或者内容包含Markdown，应用预览
+                                if (window.markdownModeEnabled || isMarkdownContent(initialContent)) {
+                                    switchToPreviewMode(contentBlock, initialContent);
+                                }
+                            }, 100);
+                        }
+                        break;
+                    case 'heading':
+                        contentBlock = document.createElement('div');
+                        contentBlock.className = 'content-block heading-block';
+                        contentBlock.setAttribute('contenteditable', 'true');
+                        contentBlock.setAttribute('data-placeholder', '输入标题文本...');
+                        contentBlock.innerHTML = initialContent;
+                        contentBlock.style.fontSize = '20px';
+                        contentBlock.style.fontWeight = '600';
+                        break;
+                    case 'image':
+                        contentBlock = document.createElement('div');
+                        contentBlock.className = 'content-block image-block';
+                        if (initialContent) {
+                            contentBlock.innerHTML = `<img src="${initialContent}" alt="文章图片">`;
+                        } else {
+                            // 创建图片上传占位符
+                            const uploadPlaceholder = document.createElement('div');
+                            uploadPlaceholder.className = 'image-upload-placeholder';
+                            uploadPlaceholder.innerHTML = `
+                                <i class="fas fa-image"></i>
+                                <span>点击上传图片</span>
+                            `;
+                            
+                            // 创建隐藏的文件输入框
+                            const fileInput = document.createElement('input');
+                            fileInput.type = 'file';
+                            fileInput.accept = 'image/*';
+                            fileInput.style.display = 'none';
+                            fileInput.className = 'image-file-input';
+                            
+                            // 将元素添加到内容块
+                            contentBlock.appendChild(uploadPlaceholder);
+                            contentBlock.appendChild(fileInput);
+                            
+                            // 添加点击事件，触发文件选择
+                            uploadPlaceholder.addEventListener('click', function() {
+                                console.log('点击了图片上传占位符');
+                                fileInput.click();
+                            });
+                            
+                            // 监听文件选择事件
+                            fileInput.addEventListener('change', function() {
+                                if (this.files && this.files[0]) {
+                                    console.log('选择了文件:', this.files[0].name);
+                                    
+                                    const reader = new FileReader();
+                                    
+                                    reader.onload = function(e) {
+                                        // 移除占位符
+                                        uploadPlaceholder.remove();
+                                        
+                                        // 创建并显示图片
+                                        const img = document.createElement('img');
+                                        img.src = e.target.result;
+                                        img.alt = '文章图片';
+                                        img.style.maxWidth = '100%';
+                                        img.style.borderRadius = '8px';
+                                        
+                                        // 清空内容块并添加图片
+                                        contentBlock.innerHTML = '';
+                                        contentBlock.appendChild(img);
+                                        
+                                        // 显示成功通知
+                                        showNotification('图片上传成功', 'success');
+                                        
+                                        // 添加点击事件用于替换图片
+                                        img.addEventListener('click', function() {
+                                            // 触发文件选择
+                                            fileInput.click();
+                                        });
+                                        
+                                        // 确保文件输入框仍然在内容块中
+                                        contentBlock.appendChild(fileInput);
+                                    };
+                                    
+                                    reader.onerror = function() {
+                                        showNotification('图片读取失败，请重试', 'error');
+                                    };
+                                    
+                                    reader.readAsDataURL(this.files[0]);
+                                }
+                            });
+                        }
+                        break;
+                    case 'code':
+                        contentBlock = document.createElement('div');
+                        contentBlock.className = 'content-block code-block';
+                        
+                        // 创建语言选择器
+                        const langSelector = document.createElement('select');
+                        langSelector.className = 'code-lang-selector';
+                        langSelector.innerHTML = `
+                            <option value="">选择语言</option>
+                            <option value="python" selected>Python</option>
+                            <option value="javascript">JavaScript</option>
+                            <option value="java">Java</option>
+                            <option value="html">HTML</option>
+                            <option value="css">CSS</option>
+                            <option value="cpp">C++</option>
+                            <option value="csharp">C#</option>
+                            <option value="php">PHP</option>
+                            <option value="ruby">Ruby</option>
+                            <option value="go">Go</option>
+                            <option value="rust">Rust</option>
+                            <option value="sql">SQL</option>
+                            <option value="bash">Bash</option>
+                            <option value="json">JSON</option>
+                            <option value="yaml">YAML</option>
+                        `;
+                        
+                        // 设置预选语言（如果有）
+                        if (language) {
+                            langSelector.value = language;
+                        } else {
+                            // 默认选择Python
+                            langSelector.value = "python";
+                            language = "python";
+                        }
+                        
+                        // 创建代码编辑区域
+                        const codeEditor = document.createElement('pre');
+                        const codeElement = document.createElement('code');
+                        codeElement.setAttribute('contenteditable', 'true');
+                        codeElement.setAttribute('data-placeholder', '在此处输入代码...');
+                        codeElement.innerHTML = initialContent;
+                        
+                        // 设置默认类名为Python
+                        codeElement.className = `language-${language}`;
+                        
+                        codeEditor.appendChild(codeElement);
+                        
+                        // 将语言选择器和代码编辑器添加到内容块
+                        contentBlock.appendChild(langSelector);
+                        contentBlock.appendChild(codeEditor);
+                        break;
+                    case 'quote':
+                        contentBlock = document.createElement('div');
+                        contentBlock.className = 'content-block quote-block';
+                        contentBlock.setAttribute('contenteditable', 'true');
+                        contentBlock.setAttribute('data-placeholder', '输入引用内容...');
+                        contentBlock.style.borderLeft = '3px solid #9747FF';
+                        contentBlock.style.paddingLeft = '15px';
+                        contentBlock.style.fontStyle = 'italic';
+                        contentBlock.innerHTML = initialContent;
+                        break;
+                    case 'divider':
+                        contentBlock = document.createElement('hr');
+                        contentBlock.className = 'content-block divider-block';
+                        contentBlock.style.border = 'none';
+                        contentBlock.style.height = '1px';
+                        contentBlock.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
+                        contentBlock.style.margin = '20px 0';
+                        break;
+                    case 'bilibili':
+                        contentBlock = document.createElement('div');
+                        contentBlock.className = 'content-block bilibili-block';
+                        
+                        if (initialContent) {
+                            // 如果已有内容（如编辑时），直接显示视频
+                            contentBlock.innerHTML = initialContent;
+                        } else {
+                            // 创建输入区域和按钮
+                            const inputContainer = document.createElement('div');
+                            inputContainer.className = 'bilibili-input-container';
+                            
+                            const input = document.createElement('input');
+                            input.type = 'text';
+                            input.className = 'bilibili-input';
+                            input.placeholder = '请粘贴B站视频链接...';
+                            
+                            const addButton = document.createElement('button');
+                            addButton.type = 'button';
+                            addButton.className = 'bilibili-add-btn';
+                            addButton.textContent = '添加视频';
+                            
+                            inputContainer.appendChild(input);
+                            inputContainer.appendChild(addButton);
+                            
+                            // 创建占位区域
+                            const placeholder = document.createElement('div');
+                            placeholder.className = 'bilibili-placeholder';
+                            placeholder.innerHTML = `
+                                <i class="fab fa-bilibili"></i>
+                                <p>在上方输入框粘贴B站视频链接，然后点击"添加视频"</p>
+                                <p class="example">例如: https://www.bilibili.com/video/BV1xx411c7mD</p>
+                            `;
+                            
+                            // 组合元素
+                            contentBlock.appendChild(inputContainer);
+                            contentBlock.appendChild(placeholder);
+                            
+                            // 添加按钮点击事件
+                            addButton.addEventListener('click', function() {
+                                addBilibiliVideo(input, placeholder, contentBlock);
+                            });
+                            
+                            // 添加回车键触发添加
+                            input.addEventListener('keypress', function(e) {
+                                if (e.key === 'Enter') {
+                                    addBilibiliVideo(input, placeholder, contentBlock);
+                                }
+                            });
+                        }
+                        break;
+                    default:
+                        contentBlock = document.createElement('div');
+                        contentBlock.className = 'content-block text-block';
+                        contentBlock.setAttribute('contenteditable', 'true');
+                        contentBlock.innerHTML = initialContent;
+                }
+                
+                blockContainer.appendChild(blockActions);
+                blockContainer.appendChild(contentBlock);
+                
+                // 插入到添加按钮之前
+                addBlockBtn.parentNode.insertBefore(blockContainer, addBlockBtn);
+                
+                // 如果是编码块，需要特殊处理聚焦逻辑
+                if (blockType === 'code') {
+                    const codeElement = contentBlock.querySelector('code');
+                    if (codeElement) {
+                        codeElement.focus();
+                        
+                        // 如果有设置语言，触发高亮
+                        if (language) {
+                            contentBlock.querySelector('.code-lang-selector').value = language;
+                            codeElement.className = `language-${language}`;
+                            hljs.highlightElement(codeElement);
+                        }
+                    }
+                } else if (contentBlock.getAttribute('contenteditable') === 'true') {
+                    // 如果是普通可编辑内容，聚焦到新块
+                    contentBlock.focus();
+                }
+                
+                // 添加删除功能
+                const deleteButton = blockActions.querySelector('.block-delete');
+                deleteButton.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    if (confirm('确定要删除这个内容块吗？')) {
+                        blockContainer.remove();
+                        // 在删除后更新所有间隔
+                        setTimeout(initBlockSpacers, 10);
+                        showNotification('内容块已删除', 'info');
+                    }
+                });
+                
+                // 添加拖拽功能
+                blockContainer.addEventListener('dragstart', handleDragStart);
+                blockContainer.addEventListener('dragend', handleDragEnd);
+                
+                // 在函数末尾确保返回创建的容器
+                return blockContainer;
+            }
+            
+            // 添加新的内容块(面向用户的函数)
+            function addNewBlock(blockType, initialContent = '', language = '') {
+                try {
+                    // 创建新块
+                    const newBlock = addNewContentBlock(blockType, initialContent, language); 
+                    if (!newBlock || !(newBlock instanceof Element)) {
+                        console.error('创建内容块失败!', newBlock);
+                        showNotification('创建内容块失败', 'error');
+                        return null;
+                    }
+                    
+                    // 将新块添加到容器中
+                    const contentArea = document.getElementById('content-area');
+                    contentArea.insertBefore(newBlock, addBlockBtn);
+                    
+                    // 更新块间隔
+                    setTimeout(initBlockSpacers, 10);
+                    
+                    // 确保新块可见
+                    newBlock.scrollIntoView({ behavior: 'smooth' });
+                    
+                    // 对于文本块，自动聚焦
+                    if (blockType === 'text') {
+                        const textBlock = newBlock.querySelector('.text-block');
+                        if (textBlock) {
+                            textBlock.focus();
+                        }
+                    }
+                    
+                    return newBlock;
+                } catch (err) {
+                    console.error('添加内容块时出错:', err);
+                    showNotification('添加内容块失败', 'error');
+                    return null;
+                }
+            }
+            
+            // 在特定位置添加新块
+            function addNewBlockAtPosition(blockType, previousBlock) {
+                try {
+                    // 创建新块
+                    const newBlock = addNewContentBlock(blockType);
+                    if (!newBlock || !(newBlock instanceof Element)) {
+                        console.error('创建内容块失败!', newBlock);
+                        showNotification('创建内容块失败', 'error');
+                        return null;
+                    }
+                    
+                    // 插入到正确的位置
+                    if (previousBlock && previousBlock.parentNode) {
+                        previousBlock.parentNode.insertBefore(newBlock, previousBlock.nextSibling);
+                    } else {
+                        const contentArea = document.getElementById('content-area');
+                        contentArea.insertBefore(newBlock, addBlockBtn);
+                    }
+                    
+                    // 更新块间隔
+                    setTimeout(initBlockSpacers, 10);
+                    
+                    // 对于文本块，自动聚焦
+                    if (blockType === 'text') {
+                        const textBlock = newBlock.querySelector('.text-block');
+                        if (textBlock) {
+                            textBlock.focus();
+                        }
+                    }
+                    
+                    return newBlock;
+                } catch (err) {
+                    console.error('添加内容块时出错:', err);
+                    showNotification('添加内容块失败', 'error');
+                    return null;
+                }
+            }
+            
+            // 标签相关逻辑
+            tagInput.addEventListener('keydown', function(e) {
+                if(e.key === 'Enter') {
+                    e.preventDefault();
+                    const value = this.value.trim();
+                    if(value && !tags.includes(value) && tags.length < 5) {
+                        tags.push(value);
+                        renderTags();
+                        this.value = '';
+                    }
+                }
+            });
+            
+            function renderTags() {
+                // 保存当前输入框
+                const currentInput = tagInput;
+                
+                // 清空容器，只保留输入框
+                tagsContainer.innerHTML = '';
+                
+                // 添加所有标签
+                tags.forEach(tag => {
+                    const tagElement = document.createElement('span');
+                    tagElement.className = 'tag';
+                    tagElement.innerHTML = `
+                        ${tag}
+                        <i class="fas fa-times" data-tag="${tag}"></i>
+                    `;
+                    tagsContainer.appendChild(tagElement);
+                });
+                
+                // 重新添加输入框
+                tagsContainer.appendChild(currentInput);
+                
+                // 更新隐藏数据字段
+                articleTagsData.value = JSON.stringify(tags);
+            }
+            
+            // 删除标签
+            tagsContainer.addEventListener('click', function(e) {
+                if(e.target.tagName === 'I' && e.target.hasAttribute('data-tag')) {
+                    const tagToRemove = e.target.getAttribute('data-tag');
+                    tags = tags.filter(tag => tag !== tagToRemove);
+                    renderTags();
+                }
+            });
+            
+            // 封面图片上传
+            coverUpload.addEventListener('click', function() {
+                coverInput.click();
+            });
+            
+            coverInput.addEventListener('change', function() {
+                const file = this.files[0];
+                if(file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        coverPreview.src = e.target.result;
+                        coverPreview.style.display = 'block';
+                        coverPlaceholder.style.display = 'none';
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+            
+            // 格式化工具栏
+            const formatButtons = document.querySelectorAll('.format-btn');
+            formatButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const format = this.getAttribute('data-format');
+                    
+                    // 针对图片和代码块等特殊格式，直接执行添加块操作
+                    if (format === 'image' || format === 'code') {
+                        addNewBlock(format);
+                        return;
+                    }
+                    
+                    // 首先找到当前激活的文本块
+                    let activeBlock = document.activeElement;
+                    if (!activeBlock || !activeBlock.classList || !activeBlock.classList.contains('content-block')) {
+                        // 如果没有激活的块，尝试找到可见的第一个文本块
+                        const visibleTextBlocks = Array.from(document.querySelectorAll('.text-block:not(.preview-mode)'));
+                        if (visibleTextBlocks.length > 0) {
+                            activeBlock = visibleTextBlocks[0];
+                            activeBlock.focus();
+                        } else {
+                            // 如果找不到可见的文本块，尝试将预览模式的文本块切换到编辑模式
+                            const previewBlocks = document.querySelectorAll('.text-block.preview-mode');
+                            if (previewBlocks.length > 0) {
+                                switchToEditMode(previewBlocks[0]);
+                                activeBlock = previewBlocks[0];
+                                setTimeout(() => {
+                                    activeBlock.focus();
+                                    applyFormat(format);
+                                }, 100);
+                                return;
+                            } else {
+                                // 如果还是找不到，创建一个新的文本块
+                                addNewBlock('text');
+                                setTimeout(() => {
+                                    const newBlock = document.querySelector('.block-container:last-of-type .content-block');
+                                    if (newBlock) {
+                                        newBlock.focus();
+                                        applyFormat(format);
+                                    }
+                                }, 100);
+                                return;
+                            }
+                        }
+                    }
+                    
+                    // 应用格式
+                    applyFormat(format);
+                });
+            });
+            
+            function applyFormat(format) {
+                // 获取当前选中内容
+                const selection = window.getSelection();
+                
+                // 找到当前激活的文本块
+                let activeBlock = document.activeElement;
+                if (!activeBlock || !activeBlock.classList || !activeBlock.classList.contains('content-block')) {
+                    showNotification('请先选择一个文本块', 'info');
+                    return;
+                }
+                
+                // 如果块处于预览模式，先切换回编辑模式
+                if (activeBlock.classList.contains('preview-mode')) {
+                    switchToEditMode(activeBlock);
+                    // 给DOM时间更新
+                    setTimeout(() => {
+                        activeBlock.focus();
+                        applyFormatToBlock(format, activeBlock);
+                    }, 100);
+                    return;
+                }
+                
+                // 直接应用格式
+                applyFormatToBlock(format, activeBlock);
+            }
+            
+            // 在文本块上应用格式
+            function applyFormatToBlock(format, block) {
+                // 确保块是可编辑的文本块
+                if (!block.classList.contains('text-block') && !block.classList.contains('heading-block')) {
+                    showNotification('此格式仅适用于文本内容', 'error');
+                    return;
+                }
+                
+                // 确保块处于编辑模式
+                if (block.getAttribute('contenteditable') !== 'true') {
+                    block.setAttribute('contenteditable', 'true');
+                }
+                
+                // 确保块有焦点
+                block.focus();
+                
+                // 获取选择区域
+                const selection = window.getSelection();
+                let hasSelection = selection.toString().trim().length > 0;
+                
+                // 如果没有选中文本，可能需要对整个块应用格式
+                if (!hasSelection && format !== 'heading' && format !== 'link') {
+                    // 对于标题和链接以外的格式，如果没有选择文本，提示用户
+                    showNotification('请先选择要格式化的文本', 'info');
+                    return;
+                }
+                
+                // 应用格式
+                switch(format) {
+                    case 'bold':
+                        document.execCommand('bold', false, null);
+                        break;
+                    case 'italic':
+                        document.execCommand('italic', false, null);
+                        break;
+                    case 'underline':
+                        document.execCommand('underline', false, null);
+                        break;
+                    case 'heading':
+                        // 对于标题，如果有选中文本，将其转为h1，否则将整个块转为标题块
+                        if (hasSelection) {
+                            document.execCommand('formatBlock', false, 'h1');
+                        } else {
+                            // 转换整个块的样式
+                            if (block.classList.contains('text-block')) {
+                                block.classList.remove('text-block');
+                                block.classList.add('heading-block');
+                                block.style.fontSize = '24px';
+                                block.style.fontWeight = '600';
+                                block.style.margin = '20px 0 10px';
+                            } else if (block.classList.contains('heading-block')) {
+                                block.classList.remove('heading-block');
+                                block.classList.add('text-block');
+                                block.style.fontSize = '';
+                                block.style.fontWeight = '';
+                                block.style.margin = '';
+                            }
+                        }
+                        break;
+                    case 'list-ul':
+                        document.execCommand('insertUnorderedList', false, null);
+                        break;
+                    case 'list-ol':
+                        document.execCommand('insertOrderedList', false, null);
+                        break;
+                    case 'link':
+                        // 如果没有选中文本，提示输入链接文本
+                        if (!hasSelection) {
+                            showNotification('请先选择要添加链接的文本', 'info');
+                            return;
+                        }
+                        const url = prompt('输入链接地址:');
+                        if (url) {
+                            document.execCommand('createLink', false, url);
+                        }
+                        break;
+                }
+                
+                // 保持块的焦点
+                block.focus();
+                
+                // 如果是Markdown模式，在编辑结束后重新渲染
+                if (window.markdownModeEnabled && !block.classList.contains('preview-mode')) {
+                    // 设置一个短暂的延迟，让用户完成编辑
+                    setTimeout(() => {
+                        if (block.innerHTML.trim() !== '') {
+                            switchToPreviewMode(block, block.innerHTML);
+                        }
+                    }, 500);
+                }
+                
+                showNotification('格式已应用', 'success');
+            }
+            
+            // 保存文章内容
+            function collectArticleContent() {
+                const title = document.getElementById('article-title').value;
+                const category = document.getElementById('article-category').value;
+                
+                // 收集所有内容块
+                const blocks = [];
+                document.querySelectorAll('.block-container').forEach(container => {
+                    const contentBlock = container.querySelector('.content-block');
+                    
+                    // 根据块类型处理内容
+                    if(contentBlock.classList.contains('text-block')) {
+                        // 如果是文本块，支持Markdown格式
+                        let rawContent;
+                        
+                        // 检查是否处于预览模式
+                        if (contentBlock.classList.contains('preview-mode')) {
+                            // 从data-original-content属性获取原始Markdown内容
+                            rawContent = contentBlock.getAttribute('data-original-content');
+                        } else {
+                            rawContent = contentBlock.innerHTML;
+                        }
+                        
+                        // 检查内容是否已经被HTML标签包围，如果是则不用处理为Markdown
+                        const hasHtmlTags = /<\/?[a-z][\s\S]*>/i.test(rawContent);
+                        
+                        blocks.push({
+                            type: 'text',
+                            content: rawContent,
+                            isMarkdown: !hasHtmlTags
+                        });
+                    } else if(contentBlock.classList.contains('heading-block')) {
+                        blocks.push({
+                            type: 'heading',
+                            content: contentBlock.innerHTML
+                        });
+                    } else if(contentBlock.classList.contains('image-block')) {
+                        // 处理图片块
+                        const img = contentBlock.querySelector('img');
+                        if(img) {
+                            blocks.push({
+                                type: 'image',
+                                content: img.src
+                            });
+                        }
+                    } else if(contentBlock.classList.contains('code-block')) {
+                        // 处理代码块，包括代码内容和语言
+                        const codeElement = contentBlock.querySelector('code');
+                        const langSelector = contentBlock.querySelector('.code-lang-selector');
+                        
+                        if(codeElement) {
+                            blocks.push({
+                                type: 'code',
+                                content: codeElement.innerHTML,
+                                language: langSelector ? langSelector.value : 'python'
+                            });
+                        }
+                    } else if(contentBlock.classList.contains('quote-block')) {
+                        blocks.push({
+                            type: 'quote',
+                            content: contentBlock.innerHTML
+                        });
+                    } else if(contentBlock.classList.contains('divider-block')) {
+                        blocks.push({
+                            type: 'divider'
+                        });
+                    } else if(contentBlock.classList.contains('bilibili-block')) {
+                        // 处理B站视频块
+                        const bilibiliUrl = contentBlock.getAttribute('data-bilibili-url');
+                        const bilibiliId = contentBlock.getAttribute('data-bilibili-id');
+                        
+                        if(bilibiliUrl && bilibiliId) {
+                            blocks.push({
+                                type: 'bilibili',
+                                url: bilibiliUrl,
+                                videoId: bilibiliId
+                            });
+                        }
+                    }
+                });
+                
+                // 转换为HTML格式的内容
+                let htmlContent = '';
+                blocks.forEach(block => {
+                    switch(block.type) {
+                        case 'text':
+                            if (block.isMarkdown) {
+                                // 处理Markdown内容中的<br>标签，将其转换为换行符
+                                let markdownContent = block.content.replace(/<br\s*\/?>/gi, '\n');
+                                
+                                // 使用marked.js将Markdown转换为HTML
+                                htmlContent += marked.parse(markdownContent);
+                            } else {
+                                htmlContent += `<p>${block.content}</p>`;
+                            }
+                            break;
+                        case 'heading':
+                            htmlContent += `<h2>${block.content}</h2>`;
+                            break;
+                        case 'image':
+                            htmlContent += `<div class="article-image"><img src="${block.content}" alt="文章图片"></div>`;
+                            break;
+                        case 'code':
+                            const language = block.language ? ` class="language-${block.language}"` : ` class="language-python"`;
+                            htmlContent += `<pre><code${language}>${block.content}</code></pre>`;
+                            break;
+                        case 'quote':
+                            htmlContent += `<blockquote>${block.content}</blockquote>`;
+                            break;
+                        case 'divider':
+                            htmlContent += `<hr>`;
+                            break;
+                        case 'bilibili':
+                            // 确定嵌入URL
+                            let embedUrl = '';
+                            if (block.videoId.startsWith('BV')) {
+                                embedUrl = `//player.bilibili.com/player.html?bvid=${block.videoId}&page=1`;
+                            } else if (block.videoId.startsWith('av')) {
+                                const aid = block.videoId.substring(2);
+                                embedUrl = `//player.bilibili.com/player.html?aid=${aid}&page=1`;
+                            }
+                            
+                            // 生成响应式的播放器HTML
+                            htmlContent += `
+                                <div class="article-bilibili-container" style="position: relative; width: 100%; padding-top: 56.25%; margin: 20px 0;">
+                                    <iframe src="${embedUrl}" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe>
+                                </div>
+                            `;
+                            break;
+                    }
+                });
+                
+                return {
+                    title,
+                    content: htmlContent,
+                    category,
+                    tags
+                };
+            }
+            
+            // 保存草稿
+            saveDraftBtn.addEventListener('click', function() {
+                const articleData = collectArticleContent();
+                
+                // 验证必填字段
+                if(!articleData.title) {
+                    showNotification('请输入文章标题', 'error');
+                    return;
+                }
+                
+                // 保存到服务器
+                fetch('/auth/api/article/draft', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(articleData),
+                    credentials: 'same-origin'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if(data.success) {
+                        showNotification('文章已保存为草稿', 'success');
+                        // 延迟后跳转到用户中心页面
+                        setTimeout(() => {
+                            window.location.href = data.redirect_url || '/auth/user-center';
+                        }, 1500);
+                    } else {
+                        showNotification(data.message || '保存草稿失败', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('保存草稿错误:', error);
+                    showNotification('保存草稿失败，请稍后重试', 'error');
+                });
+            });
+            
+            // 发布文章
+            publishBtn.addEventListener('click', function() {
+                const articleData = collectArticleContent();
+                
+                // 验证必填字段
+                if(!articleData.title) {
+                    showNotification('请输入文章标题', 'error');
+                    return;
+                }
+                
+                if(!articleData.content) {
+                    showNotification('请输入文章内容', 'error');
+                    return;
+                }
+                
+                if(!articleData.category) {
+                    showNotification('请选择文章分类', 'error');
+                    return;
+                }
+                
+                // 提交发布
+                fetch('/auth/api/article/publish', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(articleData),
+                    credentials: 'same-origin'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if(data.success) {
+                        showNotification('文章发布成功', 'success');
+                        
+                        // 延迟后跳转到文章页面
+                        setTimeout(() => {
+                            window.location.href = data.redirect_url || '/';
+                        }, 1500);
+                    } else {
+                        showNotification(data.message || '发布失败', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('发布文章错误:', error);
+                    showNotification('发布文章失败，请稍后重试', 'error');
+                });
+            });
+            
+            // 显示通知
+            function showNotification(message, type) {
+                const notification = document.getElementById('notification');
+                const notificationText = document.getElementById('notification-text');
+                const notificationIcon = notification.querySelector('i');
+                
+                notificationText.textContent = message;
+                
+                // 设置图标样式
+                if (type === 'success') {
+                    notificationIcon.className = 'fas fa-check-circle';
+                } else if (type === 'error') {
+                    notificationIcon.className = 'fas fa-exclamation-circle';
+                } else if (type === 'info') {
+                    notificationIcon.className = 'fas fa-info-circle';
+                }
+                
+                // 设置通知类样式
+                notification.className = 'notification ' + type;
+                notification.classList.add('show');
+                
+                // 自动隐藏
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 3000);
+            }
+            
+            // 创建星星背景
+            function createStars() {
+                const stars = document.querySelector('.stars');
+                if (!stars) return;
+                
+                const starsCount = 200;
+                
+                for (let i = 0; i < starsCount; i++) {
+                    const star = document.createElement('div');
+                    star.classList.add('star');
+                    
+                    // 随机大小
+                    const size = Math.random() * 2;
+                    star.style.width = `${size}px`;
+                    star.style.height = `${size}px`;
+                    
+                    // 随机位置
+                    star.style.left = `${Math.random() * 100}%`;
+                    star.style.top = `${Math.random() * 100}%`;
+                    
+                    // 随机动画延迟
+                    star.style.animationDelay = `${Math.random() * 5}s`;
+                    
+                    // 随机动画持续时间
+                    star.style.animationDuration = `${Math.random() * 3 + 2}s`;
+                    
+                    stars.appendChild(star);
+                }
+            }
+            
+            // 初始渲染标签
+            renderTags();
+            
+            // 初始化代码高亮
+            document.querySelectorAll('pre code').forEach(block => {
+                hljs.highlightElement(block);
+            });
+            
+            // 预览按钮功能
+            document.getElementById('preview-btn').addEventListener('click', function() {
+                // 收集文章内容
+                const articleData = collectArticleContent();
+                
+                // 填充预览模态框
+                document.getElementById('previewTitle').textContent = articleData.title || '无标题';
+                document.getElementById('previewDate').textContent = new Date().toLocaleDateString();
+                document.getElementById('previewCategory').textContent = articleData.category || '未分类';
+                document.getElementById('previewContent').innerHTML = articleData.content || '<p>无内容</p>';
+                
+                // 显示标签
+                const previewTags = document.getElementById('previewTags');
+                previewTags.innerHTML = '';
+                if (articleData.tags && articleData.tags.length > 0) {
+                    articleData.tags.forEach(tag => {
+                        const tagElement = document.createElement('span');
+                        tagElement.className = 'preview-tag';
+                        tagElement.textContent = tag;
+                        previewTags.appendChild(tagElement);
+                    });
+                }
+                
+                // 显示预览模态框
+                document.getElementById('previewModal').style.display = 'block';
+                
+                // 应用代码高亮
+                document.querySelectorAll('#previewContent pre code').forEach(block => {
+                    hljs.highlightElement(block);
+                });
+            });
+            
+            // 关闭预览模态框
+            document.getElementById('previewCloseBtn').addEventListener('click', function() {
+                document.getElementById('previewModal').style.display = 'none';
+            });
+            
+            // 点击模态框外部也可以关闭
+            window.addEventListener('click', function(event) {
+                const modal = document.getElementById('previewModal');
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+            
+            // ESC键关闭模态框
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Escape') {
+                    document.getElementById('previewModal').style.display = 'none';
+                }
+            });
+            
+            // 辅助函数：检测内容是否包含Markdown格式
+            function isMarkdownContent(content) {
+                // 强制开启Markdown模式，始终返回true以启用预览
+                if (window.markdownModeEnabled === true) {
+                    return true;
+                }
+                
+                // 简单检测是否包含常见的Markdown标记
+                const markdownPatterns = [
+                    /^#+\s+.+/m, // 标题 (使用m标志匹配多行) - 修改正则以匹配带空格的标题
+                    /\*\*.+?\*\*/s, // 粗体
+                    /\*.+?\*/s, // 斜体
+                    /^\s*[\-\*\+]\s+.+/m, // 无序列表
+                    /^\s*\d+\.\s+.+/m, // 有序列表
+                    /\[.+?\]\(.+?\)/s, // 链接
+                    /!\[.+?\]\(.+?\)/s, // 图片
+                    /^>\s/m, // 引用
+                    /`[^`]+?`/, // 行内代码
+                    /```[\s\S]*?```/, // 代码块
+                    /^---/m, // 分隔线
+                ];
+                
+                // 将HTML <br>标签转换为换行符以便于匹配多行模式
+                const contentWithLineBreaks = content.replace(/<br\s*\/?>/gi, '\n');
+                
+                // 调试输出
+                console.log("检测Markdown:", contentWithLineBreaks);
+                
+                // 检查每个模式
+                for (const pattern of markdownPatterns) {
+                    if (pattern.test(contentWithLineBreaks)) {
+                        console.log("匹配到Markdown模式:", pattern);
+                        return true;
+                    }
+                }
+                
+                return false;
+            }
+            
+            // 辅助函数：切换到预览模式
+            function switchToPreviewMode(element, content) {
+                console.log("切换到预览模式");
+                
+                try {
+                    // 保存原始Markdown内容
+                    element.setAttribute('data-original-content', content);
+                    
+                    // 创建预览容器
+                    const previewDiv = document.createElement('div');
+                    previewDiv.className = 'markdown-preview';
+                    
+                    // 处理内容以确保换行符正确
+                    let markdownContent = content;
+                    
+                    // 1. 替换所有HTML <br>标签为\n
+                    markdownContent = markdownContent.replace(/<br\s*\/?>/gi, '\n');
+                    
+                    // 2. 替换所有<div>开始标签为\n（用于处理某些浏览器在contenteditable中的回车行为）
+                    markdownContent = markdownContent.replace(/<div[^>]*>/gi, '\n');
+                    
+                    // 3. 移除所有其他HTML标签
+                    markdownContent = markdownContent.replace(/<[^>]+>/g, '');
+                    
+                    // 4. 处理HTML实体
+                    markdownContent = markdownContent.replace(/&lt;/g, '<')
+                                                    .replace(/&gt;/g, '>')
+                                                    .replace(/&amp;/g, '&');
+                    
+                    console.log("清理后的Markdown内容:", markdownContent);
+                    
+                    // 尝试渲染Markdown
+                    let renderedHTML = '';
+                    
+                    // 如果marked可用，使用marked渲染
+                    if (typeof marked === 'function' || typeof marked?.parse === 'function') {
+                        try {
+                            // 设置marked选项以确保正确处理换行
+                            marked.setOptions({
+                                breaks: true,  // 将\n转换为<br>
+                                gfm: true,     // 启用GitHub风格Markdown
+                                headerIds: false // 不自动添加id
+                            });
+                            
+                            renderedHTML = marked.parse(markdownContent);
+                            console.log("Markdown渲染结果:", renderedHTML);
+                        } catch (e) {
+                            console.error("Markdown渲染失败:", e);
+                            // 降级处理：如果渲染失败，保持原文本，但添加基本格式化
+                            renderedHTML = formatBasicMarkdown(markdownContent);
+                        }
+                    } else {
+                        console.warn("marked库不可用，使用简单格式化");
+                        // 如果marked库不可用，使用简单的正则表达式来格式化基本的Markdown
+                        renderedHTML = formatBasicMarkdown(markdownContent);
+                    }
+                    
+                    previewDiv.innerHTML = renderedHTML;
+                    
+                    // 清空当前内容，添加预览
+                    element.innerHTML = '';
+                    element.appendChild(previewDiv);
+                    
+                    // 添加预览模式类
+                    element.classList.add('preview-mode');
+                    element.setAttribute('contenteditable', 'false');
+                    
+                    // 添加双击事件，双击时切换回编辑模式
+                    element.addEventListener('dblclick', function() {
+                        switchToEditMode(this);
+                    });
+                    
+                    // 添加点击提示
+                    const clickHint = document.createElement('div');
+                    clickHint.className = 'click-hint';
+                    clickHint.textContent = '双击编辑';
+                    clickHint.style.fontSize = '10px';
+                    clickHint.style.textAlign = 'right';
+                    clickHint.style.color = 'rgba(255, 255, 255, 0.4)';
+                    clickHint.style.paddingTop = '5px';
+                    element.appendChild(clickHint);
+                    
+                    // 应用代码高亮
+                    element.querySelectorAll('pre code').forEach(block => {
+                        if (typeof hljs !== 'undefined') {
+                            hljs.highlightElement(block);
+                        }
+                    });
+                } catch (error) {
+                    console.error("预览模式切换错误:", error);
+                    showNotification('预览生成失败，请稍后重试', 'error');
+                }
+            }
+            
+            // 简单的Markdown格式化函数，作为备选方案
+            function formatBasicMarkdown(text) {
+                // 基本的Markdown格式化
+                let html = text;
+                
+                // 处理标题
+                html = html.replace(/^# (.+)$/gm, '<h1>$1</h1>');
+                html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+                html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+                
+                // 处理粗体和斜体
+                html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+                html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
+                
+                // 处理列表
+                html = html.replace(/^\s*[\-\*\+] (.+)$/gm, '<li>$1</li>');
+                html = html.replace(/(<li>[\s\S]+?<\/li>)/g, '<ul>$1</ul>');
+                
+                // 处理链接
+                html = html.replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2">$1</a>');
+                
+                // 处理代码
+                html = html.replace(/`(.+?)`/g, '<code>$1</code>');
+                
+                // 处理换行
+                html = html.replace(/\n/g, '<br>');
+                
+                return html;
+            }
+            
+            // 辅助函数：切换回编辑模式
+            function switchToEditMode(element) {
+                console.log("切换回编辑模式");
+                try {
+                    // 获取原始内容
+                    let originalContent = element.getAttribute('data-original-content');
+                    
+                    // 移除预览模式类
+                    element.classList.remove('preview-mode');
+                    element.setAttribute('contenteditable', 'true');
+                    
+                    // 恢复原始内容，确保换行符正确显示
+                    // 在HTML中，直接的\n不会显示为换行，需要替换为<br>
+                    if (originalContent) {
+                        // 确保换行符显示正确
+                        originalContent = originalContent.replace(/\n/g, '<br>');
+                    }
+                    
+                    // 恢复原始内容
+                    element.innerHTML = originalContent;
+                    
+                    // 聚焦
+                    element.focus();
+                    
+                    // 移除旧的blur事件监听器（如果有）
+                    if (element.blurHandler) {
+                        element.removeEventListener('blur', element.blurHandler);
+                    }
+                    
+                    // 添加新的blur事件监听器
+                    const blurHandler = function() {
+                        console.log("编辑后失焦事件触发");
+                        const content = this.innerHTML;
+                        if (content && content.trim() !== '') {
+                            if (window.markdownModeEnabled || isMarkdownContent(content)) {
+                                switchToPreviewMode(this, content);
+                            }
+                        }
+                    };
+                    
+                    element.addEventListener('blur', blurHandler);
+                    element.blurHandler = blurHandler;
+                } catch (error) {
+                    console.error("编辑模式切换错误:", error);
+                }
+            }
+
+            // 在文档加载完成后，给所有文本块添加keydown监听，处理回车键
+            document.addEventListener('keydown', function(e) {
+                const target = e.target;
+                // 如果按键是回车，并且是在文本块中
+                if (e.key === 'Enter' && target.classList.contains('text-block') && 
+                    target.getAttribute('contenteditable') === 'true') {
+                    // 获取选区
+                    const selection = window.getSelection();
+                    if (selection.rangeCount > 0) {
+                        // 获取光标位置，在当前位置插入\n而不是<br>或<div>
+                        const range = selection.getRangeAt(0);
+                        
+                        // 插入真实换行符
+                        document.execCommand('insertText', false, '\n');
+                        
+                        // 阻止默认行为（通常是插入<br>或创建新<div>）
+                        e.preventDefault();
+                    }
+                }
+            }, true);
+
+            // 初始化第一个文本块
+            function initializeFirstTextBlock() {
+                const firstTextBlock = document.querySelector('.text-block');
+                if (firstTextBlock) {
+                    firstTextBlock.focus();
+                    
+                    // 绑定blur事件，用于Markdown预览
+                    firstTextBlock.addEventListener('blur', function() {
+                        // ... 原有代码 ...
+                    });
+                }
+                
+                // 初始化块间隔
+                setTimeout(() => {
+                    initBlockSpacers();
+                }, 100);
+            }
+            
+            // 初始化拖拽支持
+            initDragAndDrop();
+            
+            // 初始化拖拽功能
+            function initDragAndDrop() {
+                // 获取内容区域
+                const contentArea = document.getElementById('content-area');
+                
+                // 添加拖拽相关事件
+                contentArea.addEventListener('dragover', handleDragOver);
+                contentArea.addEventListener('dragleave', handleDragLeave);
+                contentArea.addEventListener('drop', handleDrop);
+                
+                // 为现有的内容块添加拖拽事件
+                document.querySelectorAll('.block-container').forEach(container => {
+                    container.setAttribute('draggable', 'true');
+                    container.addEventListener('dragstart', handleDragStart);
+                    container.addEventListener('dragend', handleDragEnd);
+                    
+                    // 为现有的删除按钮添加事件
+                    const deleteButton = container.querySelector('.block-delete');
+                    if (deleteButton) {
+                        deleteButton.addEventListener('click', function(e) {
+                            e.stopPropagation();
+                            if (confirm('确定要删除这个内容块吗？')) {
+                                container.remove();
+                                // 在删除后更新所有间隔
+                                setTimeout(() => {
+                                    initBlockSpacers();
+                                }, 50);
+                                showNotification('内容块已删除', 'info');
+                            }
+                        });
+                    }
+                });
+                
+                // 初始化现有的图片块
+                document.querySelectorAll('.image-block').forEach(imageBlock => {
+                    if (imageBlock.querySelector('.image-upload-placeholder')) {
+                        initImageBlockUpload(imageBlock);
+                    }
+                });
+            }
+            
+            // 拖拽事件处理函数
+            let draggedElement = null;
+            let dropPlaceholder = null;
+            
+            // 开始拖拽
+            function handleDragStart(e) {
+                draggedElement = this;
+                this.classList.add('dragging');
+                
+                // 设置拖拽数据
+                e.dataTransfer.effectAllowed = 'move';
+                e.dataTransfer.setData('text/plain', this.getAttribute('data-block-id'));
+                
+                // 创建占位元素
+                dropPlaceholder = document.createElement('div');
+                dropPlaceholder.className = 'drag-placeholder';
+                
+                // 延迟显示，避免立即出现在原位置
+                setTimeout(() => {
+                    // 确保现在仍在拖拽
+                    if (draggedElement.classList.contains('dragging')) {
+                        contentArea.insertBefore(dropPlaceholder, draggedElement.nextSibling);
+                    }
+                }, 100);
+            }
+            
+            // 拖拽结束
+            function handleDragEnd(e) {
+                this.classList.remove('dragging');
+                draggedElement = null;
+                
+                // 移除占位元素
+                if (dropPlaceholder && dropPlaceholder.parentNode) {
+                    dropPlaceholder.remove();
+                }
+                dropPlaceholder = null;
+            }
+            
+            // 拖拽经过区域
+            function handleDragOver(e) {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+                
+                // 获取当前拖拽经过的元素
+                const target = e.target;
+                const contentArea = document.getElementById('content-area');
+                
+                // 找到最近的内容块容器
+                let blockContainer = null;
+                if (target.classList.contains('block-container')) {
+                    blockContainer = target;
+                } else if (target.closest('.block-container')) {
+                    blockContainer = target.closest('.block-container');
+                }
+                
+                // 如果找到了内容块，并且不是被拖拽的元素
+                if (blockContainer && blockContainer !== draggedElement) {
+                    const rect = blockContainer.getBoundingClientRect();
+                    const middle = rect.top + rect.height / 2;
+                    
+                    // 根据鼠标位置决定放置占位符的位置
+                    if (e.clientY < middle) {
+                        contentArea.insertBefore(dropPlaceholder, blockContainer);
+                    } else {
+                        contentArea.insertBefore(dropPlaceholder, blockContainer.nextSibling);
+                    }
+                } else if (!blockContainer && e.target === contentArea || e.target.id === 'add-block-btn') {
+                    // 如果是在内容区域但不在任何块上
+                    contentArea.insertBefore(dropPlaceholder, document.getElementById('add-block-btn'));
+                }
+            }
+            
+            // 离开拖拽区域
+            function handleDragLeave(e) {
+                // 仅当离开主容器时移除占位符
+                if (e.target === contentArea) {
+                    if (dropPlaceholder && dropPlaceholder.parentNode) {
+                        dropPlaceholder.remove();
+                    }
+                }
+            }
+            
+            // 放置元素
+            function handleDrop(e) {
+                e.preventDefault();
+                
+                // 获取被拖拽元素的ID
+                const blockId = e.dataTransfer.getData('text/plain');
+                const draggedBlock = document.querySelector(`[data-block-id="${blockId}"]`);
+                
+                // 如果找到了被拖拽的元素和占位符
+                if (draggedBlock && dropPlaceholder && dropPlaceholder.parentNode) {
+                    // 将元素移动到占位符位置
+                    contentArea.insertBefore(draggedBlock, dropPlaceholder);
+                    showNotification('已调整内容块位置', 'success');
+                }
+                
+                // 移除占位符
+                if (dropPlaceholder && dropPlaceholder.parentNode) {
+                    dropPlaceholder.remove();
+                }
+                dropPlaceholder = null;
+            }
+
+            // 辅助函数：初始化图片块上传功能
+            function initImageBlockUpload(imageBlock) {
+                // 查找子元素
+                const uploadPlaceholder = imageBlock.querySelector('.image-upload-placeholder');
+                const fileInput = imageBlock.querySelector('.image-file-input');
+                
+                if (!uploadPlaceholder || !fileInput) {
+                    console.error('图片块缺少必要元素');
+                    return;
+                }
+                
+                // 确保事件绑定
+                uploadPlaceholder.addEventListener('click', function() {
+                    console.log('点击了图片上传占位符');
+                    fileInput.click();
+                });
+                
+                // 确保文件选择事件绑定
+                fileInput.addEventListener('change', function() {
+                    if (this.files && this.files[0]) {
+                        console.log('选择了文件:', this.files[0].name);
+                        
+                        const reader = new FileReader();
+                        
+                        reader.onload = function(e) {
+                            // 移除占位符
+                            uploadPlaceholder.remove();
+                            
+                            // 创建并显示图片
+                            const img = document.createElement('img');
+                            img.src = e.target.result;
+                            img.alt = '文章图片';
+                            img.style.maxWidth = '100%';
+                            img.style.borderRadius = '8px';
+                            
+                            // 清空内容块并添加图片
+                            imageBlock.innerHTML = '';
+                            imageBlock.appendChild(img);
+                            
+                            // 显示成功通知
+                            showNotification('图片上传成功', 'success');
+                            
+                            // 添加点击事件用于替换图片
+                            img.addEventListener('click', function() {
+                                // 触发文件选择
+                                fileInput.click();
+                            });
+                            
+                            // 确保文件输入框仍然在内容块中
+                            imageBlock.appendChild(fileInput);
+                        };
+                        
+                        reader.onerror = function() {
+                            showNotification('图片读取失败，请重试', 'error');
+                        };
+                        
+                        reader.readAsDataURL(this.files[0]);
+                    }
+                });
+            }
+
+            // B站视频处理函数
+            function addBilibiliVideo(input, placeholder, container) {
+                const url = input.value.trim();
+                if (!url) {
+                    showNotification('请输入B站视频链接', 'error');
+                    return;
+                }
+                
+                // 提取视频ID (BV号 或 av号)
+                let videoId = '';
+                let embedUrl = '';
+                
+                // 匹配BV号
+                const bvMatch = url.match(/\/BV(\w+)/);
+                if (bvMatch) {
+                    videoId = 'BV' + bvMatch[1];
+                    embedUrl = `//player.bilibili.com/player.html?bvid=${videoId}&page=1`;
+                } else {
+                    // 匹配av号
+                    const avMatch = url.match(/\/av(\d+)/);
+                    if (avMatch) {
+                        videoId = 'av' + avMatch[1];
+                        embedUrl = `//player.bilibili.com/player.html?aid=${avMatch[1]}&page=1`;
+                    } else {
+                        showNotification('无法识别的B站视频链接格式', 'error');
+                        return;
+                    }
+                }
+                
+                // 创建播放器容器
+                const playerContainer = document.createElement('div');
+                playerContainer.className = 'bilibili-player-container';
+                
+                // 创建iframe
+                const iframe = document.createElement('iframe');
+                iframe.src = embedUrl;
+                iframe.setAttribute('scrolling', 'no');
+                iframe.setAttribute('border', '0');
+                iframe.setAttribute('frameborder', 'no');
+                iframe.setAttribute('framespacing', '0');
+                iframe.setAttribute('allowfullscreen', 'true');
+                iframe.setAttribute('sandbox', 'allow-top-navigation allow-same-origin allow-forms allow-scripts');
+                
+                // 添加到容器
+                playerContainer.appendChild(iframe);
+                
+                // 清除输入和占位符
+                placeholder.remove();
+                const inputContainer = container.querySelector('.bilibili-input-container');
+                if (inputContainer) {
+                    inputContainer.remove();
+                }
+                
+                // 添加播放器
+                container.appendChild(playerContainer);
+                
+                // 保存原始URL，用于数据收集
+                container.setAttribute('data-bilibili-url', url);
+                container.setAttribute('data-bilibili-id', videoId);
+                
+                showNotification('B站视频添加成功', 'success');
+            }
+
+            // 创建块间隔和添加按钮
+            function createBlockSpacer() {
+                const spacer = document.createElement('div');
+                spacer.className = 'block-spacer';
+                
+                const addButton = document.createElement('button');
+                addButton.className = 'spacer-add-btn';
+                addButton.innerHTML = '<i class="fas fa-plus"></i>';
+                addButton.title = '在此处添加内容';
+                
+                // 添加点击事件
+                addButton.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    
+                    // 记录当前活动的分隔符
+                    window.activeBlockSpacer = spacer;
+                    
+                    // 计算菜单位置，考虑滚动偏移
+                    const buttonRect = this.getBoundingClientRect();
+                    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                    const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+                    
+                    let menuTop = buttonRect.bottom + scrollTop;
+                    let menuLeft = buttonRect.left - 100 + scrollLeft;
+                    
+                    // 确保菜单不会显示在屏幕右侧边缘之外
+                    const menuWidth = 200;
+                    const viewportWidth = window.innerWidth;
+                    if (menuLeft + menuWidth > viewportWidth) {
+                        menuLeft = viewportWidth - menuWidth - 10;
+                    }
+                    
+                    // 确保菜单不会显示在屏幕左侧边缘之外
+                    if (menuLeft < 10) {
+                        menuLeft = 10;
+                    }
+                    
+                    blockMenu.style.position = 'absolute';
+                    blockMenu.style.top = menuTop + 'px';
+                    blockMenu.style.left = menuLeft + 'px';
+                    blockMenu.classList.add('show');
+                });
+                
+                spacer.appendChild(addButton);
+                return spacer;
+            }
+            
+            // 初始化块间隔
+            function initBlockSpacers() {
+                try {
+                    console.log('开始更新块间隔');
+                    // 首先移除所有现有的块间隔
+                    document.querySelectorAll('.block-spacer').forEach(spacer => {
+                        spacer.remove();
+                    });
+                    
+                    // 获取内容区域
+                    const contentArea = document.getElementById('content-area');
+                    if (!contentArea) {
+                        console.error('找不到内容区域元素!');
+                        return;
+                    }
+                    
+                    // 查找所有内容块容器
+                    const blockContainers = Array.from(contentArea.querySelectorAll('.block-container'));
+                    console.log('找到内容块数量:', blockContainers.length, blockContainers);
+                    
+                    // 为每个块容器添加一个间隔
+                    blockContainers.forEach((container, index) => {
+                        const blockId = container.getAttribute('data-block-id');
+                        console.log('处理块索引:', index, blockId, container);
+                        
+                        if (!container.parentNode) {
+                            console.error('块容器没有父节点!', container);
+                            return;
+                        }
+                        
+                        const spacer = document.createElement('div');
+                        spacer.className = 'block-spacer';
+                        spacer.setAttribute('data-for-block', blockId);
+                        
+                        const addButton = document.createElement('button');
+                        addButton.className = 'spacer-add-btn';
+                        addButton.innerHTML = '<i class="fas fa-plus"></i>';
+                        addButton.title = '在此处添加内容';
+                        
+                        addButton.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            
+                            // 记录当前活动的分隔符
+                            window.activeBlockSpacer = spacer;
+                            
+                            // 计算菜单位置，考虑滚动偏移
+                            const buttonRect = this.getBoundingClientRect();
+                            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                            const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+                            
+                            let menuTop = buttonRect.bottom + scrollTop;
+                            let menuLeft = buttonRect.left - 80 + scrollLeft;
+                            
+                            // 确保菜单不会显示在屏幕右侧边缘之外
+                            const menuWidth = 200;
+                            const viewportWidth = window.innerWidth;
+                            if (menuLeft + menuWidth > viewportWidth) {
+                                menuLeft = viewportWidth - menuWidth - 10;
+                            }
+                            
+                            // 确保菜单不会显示在屏幕左侧边缘之外
+                            if (menuLeft < 10) {
+                                menuLeft = 10;
+                            }
+                            
+                            blockMenu.style.position = 'absolute';
+                            blockMenu.style.top = menuTop + 'px';
+                            blockMenu.style.left = menuLeft + 'px';
+                            blockMenu.classList.add('show');
+                        });
+                        
+                        spacer.appendChild(addButton);
+                        
+                        // 将分隔符插入到此块后面
+                        try {
+                            container.parentNode.insertBefore(spacer, container.nextSibling);
+                        } catch (err) {
+                            console.error('无法插入分隔符:', err, container);
+                        }
+                    });
+                    
+                    console.log('块间隔更新完成');
+                } catch (err) {
+                    console.error('初始化块间隔时出错:', err);
+                }
+            }
+
+            // 在应用程序初始化时调用初始化函数
+            document.addEventListener('DOMContentLoaded', function() {
+                // ... 原有代码 ...
+                
+                // 延迟初始化以确保所有元素已加载
+                setTimeout(function() {
+                    // 创建星星背景
+                    createStars();
+                    
+                    // 处理初始文本块
+                    initializeFirstTextBlock();
+                    
+                    // 强制更新所有块间隔
+                    initBlockSpacers();
+                }, 500);
+            });
+            
+            // ... 原有代码 ...
+        });
+    </script>
+</body>
+</html> 

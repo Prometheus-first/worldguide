@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ article.title }} - 知识探索平台</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        header {
+            background-color: #fff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+        }
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #3498db;
+        }
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+        .nav-links a {
+            text-decoration: none;
+            color: #555;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        .nav-links a:hover {
+            color: #3498db;
+        }
+        .article-container {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            margin: 40px 0;
+        }
+        .article-main {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+        .article-header {
+            padding: 30px;
+            border-bottom: 1px solid #eee;
+        }
+        .article-title {
+            font-size: 2.2rem;
+            margin-bottom: 15px;
+            line-height: 1.3;
+        }
+        .article-meta {
+            display: flex;
+            align-items: center;
+            color: #777;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+        .article-meta img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .article-category {
+            display: inline-block;
+            padding: 3px 10px;
+            background: #eef6fc;
+            color: #3498db;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-right: 10px;
+        }
+        .article-content {
+            padding: 30px;
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+        .article-content p {
+            margin-bottom: 20px;
+        }
+        .article-content img {
+            max-width: 100%;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .article-content h2 {
+            margin: 30px 0 20px;
+            font-size: 1.6rem;
+        }
+        .article-content h3 {
+            margin: 25px 0 15px;
+            font-size: 1.4rem;
+        }
+        .article-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+        .author-card, .related-articles {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            padding: 25px;
+        }
+        .author-card h3, .related-articles h3 {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .author-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .author-info img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            margin-right: 15px;
+        }
+        .author-name {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        .author-bio {
+            color: #666;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        .related-article {
+            display: flex;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        .related-article:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        .related-article img {
+            width: 70px;
+            height: 70px;
+            object-fit: cover;
+            border-radius: 5px;
+            margin-right: 15px;
+        }
+        .related-article-info h4 {
+            font-size: 0.95rem;
+            margin-bottom: 5px;
+        }
+        .related-article-info a {
+            text-decoration: none;
+            color: #333;
+            transition: color 0.3s;
+        }
+        .related-article-info a:hover {
+            color: #3498db;
+        }
+        .related-article-meta {
+            font-size: 0.8rem;
+            color: #777;
+        }
+        footer {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            padding: 40px 0 20px;
+        }
+        .footer-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+        }
+        .footer-section h3 {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: #fff;
+        }
+        .footer-links a {
+            display: block;
+            color: #bdc3c7;
+            text-decoration: none;
+            margin-bottom: 10px;
+            transition: color 0.3s;
+        }
+        .footer-links a:hover {
+            color: #3498db;
+        }
+        .footer-bottom {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #34495e;
+            font-size: 0.9rem;
+            color: #bdc3c7;
+        }
+        @media (max-width: 768px) {
+            .article-container {
+                grid-template-columns: 1fr;
+            }
+            .footer-container {
+                grid-template-columns: 1fr 1fr;
+            }
+            .article-title {
+                font-size: 1.8rem;
+            }
+        }
+        @media (max-width: 480px) {
+            .footer-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <div class="logo">知识探索平台</div>
+                <div class="nav-links">
+                    <a href="/">首页</a>
+                    <a href="/categories">分类</a>
+                    <a href="/featured">热门</a>
+                    <a href="/latest">最新</a>
+                    {% if current_user.is_authenticated %}
+                        <a href="/profile">{{ current_user.username }}</a>
+                        <a href="/logout">退出</a>
+                    {% else %}
+                        <a href="/login">登录</a>
+                        <a href="/register">注册</a>
+                    {% endif %}
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="article-container">
+            <div class="article-main">
+                <div class="article-header">
+                    <h1 class="article-title">{{ article.title }}</h1>
+                    <div class="article-meta">
+                        <img src="{{ article.author.avatar_url }}" alt="{{ article.author.username }}">
+                        <div>
+                            <div>{{ article.author.username }}</div>
+                            <div>{{ article.created_at.strftime('%Y-%m-%d') }} • {{ article.read_time }} 分钟阅读</div>
+                        </div>
+                    </div>
+                    <span class="article-category">{{ article.category.name }}</span>
+                </div>
+                <div class="article-content">
+                    {{ article.content|safe }}
+                </div>
+            </div>
+            
+            <div class="article-sidebar">
+                <div class="author-card">
+                    <h3>关于作者</h3>
+                    <div class="author-info">
+                        <img src="{{ article.author.avatar_url }}" alt="{{ article.author.username }}">
+                        <div>
+                            <div class="author-name">{{ article.author.username }}</div>
+                            <div>{{ article.author.articles_count }} 篇文章</div>
+                        </div>
+                    </div>
+                    <p class="author-bio">{{ article.author.bio }}</p>
+                </div>
+                
+                <div class="related-articles">
+                    <h3>相关文章</h3>
+                    {% for related in related_articles %}
+                    <div class="related-article">
+                        <img src="{{ related.cover_image }}" alt="{{ related.title }}">
+                        <div class="related-article-info">
+                            <h4><a href="/article/{{ related.id }}">{{ related.title }}</a></h4>
+                            <div class="related-article-meta">
+                                {{ related.created_at.strftime('%Y-%m-%d') }} • {{ related.read_time }} 分钟阅读
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-container">
+                <div class="footer-section">
+                    <h3>知识探索平台</h3>
+                    <p>发现知识，分享智慧，连接世界各地的探索者。</p>
+                </div>
+                <div class="footer-section">
+                    <h3>分类</h3>
+                    <div class="footer-links">
+                        <a href="/category/science">科学</a>
+                        <a href="/category/technology">技术</a>
+                        <a href="/category/culture">文化</a>
+                        <a href="/category/health">健康</a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h3>快速链接</h3>
+                    <div class="footer-links">
+                        <a href="/about">关于我们</a>
+                        <a href="/contact">联系我们</a>
+                        <a href="/privacy">隐私政策</a>
+                        <a href="/terms">使用条款</a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h3>联系我们</h3>
+                    <div class="footer-links">
+                        <a href="mailto:info@knowledgeplatform.com">info@knowledgeplatform.com</a>
+                        <a href="tel:+123456789">+123 456 789</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                &copy; 2023 知识探索平台 - 保留所有权利
+            </div>
+        </div>
+    </footer>
+</body>
+</html> 

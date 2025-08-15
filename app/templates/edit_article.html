@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>编辑文章 - 世界指南</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <!-- 添加highlight.js库用于代码高亮 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+        }
+        
+        body {
+            background-color: #0c0c14;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+        
+        /* 背景动画效果 */
+        .background-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        .gradient-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 15% 50%, #170a3a, transparent 25%),
+                         radial-gradient(circle at 85% 30%, #260f4c, transparent 25%);
+            opacity: 0.4;
+        }
+        
+        .stars {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .star {
+            position: absolute;
+            background-color: #fff;
+            border-radius: 50%;
+            opacity: 0;
+            animation: twinkle 2s infinite ease-in-out;
+        }
+        
+        @keyframes twinkle {
+            0% { opacity: 0; }
+            50% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+        
+        /* 导航栏样式 */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 50px;
+            position: relative;
+            z-index: 5;
+            background-color: rgba(12, 12, 20, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            color: #fff;
+            font-weight: 500;
+            font-size: 22px;
+            text-decoration: none;
+            position: relative;
+        }
+        
+        .logo svg {
+            margin-right: 10px;
+            position: relative;
+            z-index: 1;
+            fill: #9747FF;
+        }
+        
+        .logo::after {
+            content: '';
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: radial-gradient(circle, rgba(147, 112, 219, 0.5), transparent 70%);
+            border-radius: 50%;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 0;
+            filter: blur(5px);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .nav-links a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-size: 15px;
+            transition: all 0.3s;
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: 1px solid transparent;
+        }
+        
+        .nav-links a:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .nav-links a.active {
+            color: #9747FF;
+            background: rgba(147, 112, 219, 0.1);
+            border-color: rgba(147, 112, 219, 0.2);
+        }
+        
+        /* 主容器 */
+        .main-container {
+            max-width: 1200px;
+            width: 100%;
+            margin: 30px auto;
+            padding: 0 20px;
+            flex: 1;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+        }
+        
+        /* 编辑区域 */
+        .editor-container {
+            background-color: rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s;
+        }
+        
+        .editor-container:hover {
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2), 0 0 15px rgba(147, 112, 219, 0.3);
+            border-color: rgba(147, 112, 219, 0.3);
+        }
+        
+        .editor-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .editor-title {
+            width: 100%;
+            padding: 10px 0;
+            font-size: 24px;
+            font-weight: 600;
+            border: none;
+            outline: none;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+            transition: border-color 0.3s;
+            background-color: transparent;
+            color: #fff;
+        }
+        
+        .editor-title:focus {
+            border-color: #9747FF;
+        }
+        
+        .editor-title::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+        
+        .editor-content {
+            height: 500px;
+        }
+        
+        /* 编辑器工具栏自定义 */
+        .ql-toolbar.ql-snow {
+            border: none;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 10px 20px;
+            background-color: rgba(255, 255, 255, 0.03);
+        }
+        
+        .ql-container.ql-snow {
+            border: none;
+            height: calc(100% - 42px);
+            background-color: rgba(255, 255, 255, 0.02);
+            color: #fff;
+        }
+        
+        /* 对Quill编辑器按钮的覆盖样式 */
+        .ql-formats button, .ql-formats .ql-picker {
+            color: rgba(255, 255, 255, 0.7) !important;
+        }
+        
+        .ql-formats button:hover, .ql-formats .ql-picker:hover {
+            color: #fff !important;
+        }
+        
+        .ql-formats button.ql-active, .ql-formats .ql-picker.ql-active {
+            color: #9747FF !important;
+        }
+        
+        .ql-formats button svg path, .ql-formats button svg line, .ql-formats button svg polygon {
+            stroke: currentColor !important;
+        }
+        
+        .ql-formats button.ql-active svg path, .ql-formats button.ql-active svg line, .ql-formats button.ql-active svg polygon {
+            stroke: #9747FF !important;
+        }
+        
+        .ql-picker-label {
+            color: rgba(255, 255, 255, 0.7) !important;
+        }
+        
+        .ql-picker-options {
+            background-color: #1c1c2e !important;
+            border-color: rgba(255, 255, 255, 0.1) !important;
+        }
+        
+        .ql-picker-item {
+            color: rgba(255, 255, 255, 0.7) !important;
+        }
+        
+        .ql-picker-item:hover {
+            color: #fff !important;
+        }
+        
+        .ql-picker-item.ql-selected {
+            color: #9747FF !important;
+        }
+        
+        /* 侧边栏 */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .sidebar-card {
+            background-color: rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s;
+        }
+        
+        .sidebar-card:hover {
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2), 0 0 15px rgba(147, 112, 219, 0.3);
+            border-color: rgba(147, 112, 219, 0.3);
+        }
+        
+        .sidebar-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #fff;
+        }
+        
+        .sidebar-header i {
+            color: #9747FF;
+        }
+        
+        .sidebar-content {
+            padding: 20px;
+        }
+        
+        /* 表单样式 */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px 12px;
+            background-color: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+            color: #fff;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #9747FF;
+            box-shadow: 0 0 0 2px rgba(151, 71, 255, 0.1);
+        }
+        
+        .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+        
+        .form-control option {
+            background-color: #1c1c2e;
+            color: #fff;
+        }
+        
+        /* 文件上传 */
+        .file-upload {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .file-input {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+        
+        .file-input-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 15px;
+            background-color: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+            transition: all 0.3s;
+        }
+        
+        .file-input-btn:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .preview-container {
+            width: 100%;
+            height: 150px;
+            background-color: rgba(255, 255, 255, 0.03);
+            border: 1px dashed rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255, 255, 255, 0.3);
+            overflow: hidden;
+        }
+        
+        .preview-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        /* 标签样式 */
+        .tags-input-wrapper {
+            width: 100%;
+            padding: 6px 12px;
+            background-color: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+            min-height: 43px;
+            cursor: text;
+            transition: all 0.3s;
+        }
+        
+        .tags-input-wrapper:focus-within {
+            outline: none;
+            border-color: #9747FF;
+            box-shadow: 0 0 0 2px rgba(151, 71, 255, 0.1);
+        }
+        
+        .tag {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 10px;
+            background-color: rgba(151, 71, 255, 0.1);
+            border-radius: 100px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(151, 71, 255, 0.2);
+        }
+        
+        .tag-remove {
+            cursor: pointer;
+            width: 16px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+        
+        .tag-remove:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .tags-input {
+            flex: 1;
+            min-width: 60px;
+            border: none;
+            outline: none;
+            background-color: transparent;
+            font-size: 14px;
+            color: #fff;
+        }
+        
+        .tags-input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+        
+        /* 按钮样式 */
+        .btn-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, #7336f0, #9747FF);
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(transparent, rgba(255, 255, 255, 0.1), transparent);
+            transform: rotate(30deg);
+            transition: all 0.5s;
+            opacity: 0;
+        }
+        
+        .btn-primary:hover {
+            box-shadow: 0 0 15px rgba(147, 112, 219, 0.5);
+            transform: translateY(-2px);
+        }
+        
+        .btn-primary:hover::before {
+            opacity: 1;
+            left: 100%;
+            top: 100%;
+            transition: all 0.5s;
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid #9747FF;
+            color: #9747FF;
+        }
+        
+        .btn-outline:hover {
+            background-color: rgba(151, 71, 255, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .btn-ghost {
+            background-color: transparent;
+            color: rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .btn-ghost:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        /* 通知消息 */
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: rgba(18, 18, 30, 0.9);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 1000;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+        }
+        
+        .notification.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .notification i {
+            font-size: 20px;
+        }
+        
+        .notification.success {
+            border-left: 4px solid #2ecc71;
+        }
+        
+        .notification.success i {
+            color: #2ecc71;
+        }
+        
+        .notification.error {
+            border-left: 4px solid #ff4757;
+        }
+        
+        .notification.error i {
+            color: #ff4757;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 992px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .btn-container {
+                flex-direction: column;
+            }
+        }
+        
+        /* 代码块样式覆盖 */
+        pre {
+            background-color: rgba(0, 0, 0, 0.2) !important;
+            border-radius: 6px !important;
+            padding: 10px !important;
+            margin: 10px 0 !important;
+        }
+        
+        code {
+            font-family: monospace;
+            color: #b68aff !important;
+        }
+        
+        /* 语法高亮容器 */
+        .hljs {
+            background-color: transparent !important;
+            padding: 0 !important;
+        }
+        
+        /* 高亮语法颜色主题覆盖 */
+        .hljs-keyword { color: #c678dd !important; }
+        .hljs-string { color: #98c379 !important; }
+        .hljs-number { color: #d19a66 !important; }
+        .hljs-comment { color: #5c6370 !important; font-style: italic !important; }
+        .hljs-function { color: #61afef !important; }
+        .hljs-tag { color: #e06c75 !important; }
+        .hljs-attr { color: #d19a66 !important; }
+        .hljs-name { color: #e06c75 !important; }
+    </style>
+</head>
+<body>
+    <div class="background-animation">
+        <div class="gradient-bg"></div>
+        <div class="stars"></div>
+    </div>
+    
+    <header>
+        <div class="navbar">
+            <a href="{{ url_for('auth.home_page') }}" class="logo">
+                <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 3L3 8.6v6.8L12 21l9-5.6V8.6L12 3z"/>
+                    <circle cx="12" cy="12" r="2"/>
+                </svg>
+                世界指南
+            </a>
+            
+            <div class="nav-links">
+                <a href="/">首页</a>
+                <a href="{{ url_for('auth.articles') }}">文章</a>
+                <a href="#">热门</a>
+                <a href="#">最新</a>
+                <a href="{{ url_for('auth.user_center') }}">个人中心</a>
+                <a href="{{ url_for('auth.logout') }}">退出</a>
+                <a href="{{ url_for('auth.publish_article_page') }}" class="create-article-btn">创建文章</a>
+            </div>
+        </div>
+    </header>
+    
+    <form id="editArticleForm" class="main-container">
+        <!-- 编辑区域 -->
+        <section class="editor-container">
+            <div class="editor-header">
+                <input type="text" class="editor-title" id="title" name="title" placeholder="输入文章标题..." value="{{ article.title }}">
+            </div>
+            <div class="editor-content" id="editor"></div>
+        </section>
+        
+        <!-- 侧边栏 -->
+        <div class="sidebar">
+            <div class="sidebar-card">
+                <div class="sidebar-header">
+                    <i class="fas fa-cog"></i>
+                    文章设置
+                </div>
+                <div class="sidebar-content">
+                    <div class="form-group">
+                        <label class="form-label" for="category">文章分类</label>
+                        <select class="form-control" id="category" name="category">
+                            <option value="">选择分类...</option>
+                            <option value="技术" {% if article.category == '技术' %}selected{% endif %}>技术</option>
+                            <option value="旅行" {% if article.category == '旅行' %}selected{% endif %}>旅行</option>
+                            <option value="美食" {% if article.category == '美食' %}selected{% endif %}>美食</option>
+                            <option value="生活" {% if article.category == '生活' %}selected{% endif %}>生活</option>
+                            <option value="其他" {% if article.category == '其他' %}selected{% endif %}>其他</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">文章标签</label>
+                        <div class="tags-input-wrapper" id="tagsContainer">
+                            {% if article.tags %}
+                                {% for tag in article.tags %}
+                                    <div class="tag">
+                                        <span>{{ tag }}</span>
+                                        <div class="tag-remove" onclick="removeTag(this)">×</div>
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                            <input type="text" class="tags-input" id="tagInput" placeholder="添加标签...">
+                        </div>
+                        <input type="hidden" id="tags" name="tags" value="{{ article.tags|join(',') if article.tags else '' }}">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="sidebar-card">
+                <div class="sidebar-header">
+                    <i class="fas fa-image"></i>
+                    封面图片
+                </div>
+                <div class="sidebar-content">
+                    <div class="file-upload">
+                        <div class="preview-container" id="previewContainer">
+                            {% if article.cover_image %}
+                                <img src="{{ article.cover_image }}" id="coverImagePreview" alt="封面预览">
+                            {% else %}
+                                <i class="fas fa-image fa-3x"></i>
+                            {% endif %}
+                        </div>
+                        <div class="file-input-wrapper">
+                            <div class="file-input-btn">
+                                <i class="fas fa-upload"></i>
+                                上传图片
+                            </div>
+                            <input type="file" class="file-input" id="coverImage" accept="image/*">
+                        </div>
+                    </div>
+                    <input type="hidden" id="cover_image" name="cover_image" value="{{ article.cover_image }}">
+                </div>
+            </div>
+            
+            <div class="btn-container">
+                <button type="button" id="updateBtn" class="btn btn-primary">
+                    <i class="fas fa-check"></i>
+                    更新文章
+                </button>
+                <button type="button" id="previewBtn" class="btn btn-outline">
+                    <i class="fas fa-eye"></i>
+                    预览
+                </button>
+                <button type="button" id="cancelBtn" class="btn btn-ghost">
+                    <i class="fas fa-times"></i>
+                    取消
+                </button>
+            </div>
+        </div>
+    </form>
+    
+    <!-- 通知消息 -->
+    <div class="notification" id="notification">
+        <i class="fas fa-check-circle"></i>
+        <span id="notification-text">操作成功</span>
+    </div>
+    
+    <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 创建星星背景
+            createStars();
+            
+            // 初始化编辑器
+            const quill = new Quill('#editor', {
+                theme: 'snow',
+                modules: {
+                    toolbar: [
+                        [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                        ['bold', 'italic', 'underline', 'strike'],
+                        [{ 'color': [] }, { 'background': [] }],
+                        [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                        [{ 'align': [] }],
+                        ['blockquote', 'code-block'],
+                        ['link', 'image'],
+                        ['clean']
+                    ]
+                },
+                placeholder: '开始撰写你的文章...'
+            });
+            
+            // 设置编辑器内容
+            quill.root.innerHTML = `{{ article.content|safe }}`;
+            
+            // 标签处理
+            const tagsContainer = document.getElementById('tagsContainer');
+            const tagInput = document.getElementById('tagInput');
+            const tagsHidden = document.getElementById('tags');
+            
+            // 确保标签容器可以获取焦点
+            tagsContainer.addEventListener('click', function() {
+                tagInput.focus();
+            });
+            
+            // 添加标签
+            tagInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ',') {
+                    e.preventDefault();
+                    const value = this.value.trim();
+                    if (value) {
+                        addTag(value);
+                        this.value = '';
+                        updateTagsHidden();
+                    }
+                }
+            });
+            
+            // 失去焦点时添加标签
+            tagInput.addEventListener('blur', function() {
+                const value = this.value.trim();
+                if (value) {
+                    addTag(value);
+                    this.value = '';
+                    updateTagsHidden();
+                }
+            });
+            
+            // 保存文章按钮
+            document.getElementById('updateBtn').addEventListener('click', function() {
+                const title = document.getElementById('title').value;
+                const content = quill.root.innerHTML;
+                const category = document.getElementById('category').value;
+                const tags = document.getElementById('tags').value;
+                const coverImage = document.getElementById('cover_image').value;
+                
+                // 验证表单
+                if (!title) {
+                    showNotification('请输入文章标题', 'error');
+                    return;
+                }
+                
+                if (!content || content === '<p><br></p>') {
+                    showNotification('请输入文章内容', 'error');
+                    return;
+                }
+                
+                if (!category) {
+                    showNotification('请选择文章分类', 'error');
+                    return;
+                }
+                
+                // 收集表单数据
+                const formData = {
+                    title: title,
+                    content: content,
+                    category: category,
+                    tags: tags ? tags.split(',') : [],
+                    cover_image: coverImage
+                };
+                
+                // 发送到服务器
+                fetch('/auth/api/article/update/{{ article._id }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData),
+                    credentials: 'same-origin'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showNotification('文章更新成功', 'success');
+                        setTimeout(() => {
+                            window.location.href = data.redirect_url || '/auth/article/{{ article._id }}';
+                        }, 1500);
+                    } else {
+                        showNotification(data.message || '更新失败', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('更新文章错误:', error);
+                    showNotification('更新文章失败，请稍后重试', 'error');
+                });
+            });
+            
+            // 初始化代码高亮
+            document.querySelectorAll('pre code').forEach(block => {
+                hljs.highlightElement(block);
+            });
+            
+            // 监听代码块变化，保持高亮
+            quill.on('text-change', function() {
+                setTimeout(() => {
+                    document.querySelectorAll('pre code').forEach(block => {
+                        if (!block.classList.contains('hljs')) {
+                            hljs.highlightElement(block);
+                        }
+                    });
+                }, 100);
+            });
+        });
+        
+        // 创建星星背景
+        function createStars() {
+            const stars = document.querySelector('.stars');
+            const starsCount = 200;
+            
+            for (let i = 0; i < starsCount; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                
+                // 随机大小
+                const size = Math.random() * 2;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                
+                // 随机位置
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.top = `${Math.random() * 100}%`;
+                
+                // 随机动画延迟
+                star.style.animationDelay = `${Math.random() * 5}s`;
+                
+                // 随机动画持续时间
+                star.style.animationDuration = `${Math.random() * 3 + 2}s`;
+                
+                stars.appendChild(star);
+            }
+        }
+        
+        // 添加标签函数
+        function addTag(value) {
+            // 检查标签是否已存在
+            const tagsContainer = document.getElementById('tagsContainer');
+            const tagInput = document.getElementById('tagInput');
+            const existingTags = Array.from(tagsContainer.querySelectorAll('.tag span'))
+                .map(span => span.textContent.toLowerCase());
+            
+            if (!existingTags.includes(value.toLowerCase())) {
+                const tag = document.createElement('div');
+                tag.className = 'tag';
+                tag.innerHTML = `<span>${value}</span><div class="tag-remove" onclick="removeTag(this)">×</div>`;
+                tagsContainer.insertBefore(tag, tagInput);
+            }
+        }
+        
+        // 移除标签函数
+        function removeTag(element) {
+            const tag = element.parentElement;
+            tag.remove();
+            updateTagsHidden();
+        }
+        
+        // 更新隐藏标签字段
+        function updateTagsHidden() {
+            const tagsContainer = document.getElementById('tagsContainer');
+            const tagsHidden = document.getElementById('tags');
+            const tags = Array.from(tagsContainer.querySelectorAll('.tag span'))
+                .map(span => span.textContent);
+            tagsHidden.value = tags.join(',');
+        }
+        
+        // 图片上传预览
+        document.getElementById('coverImage').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                // 验证文件类型
+                if (!file.type.match('image.*')) {
+                    showNotification('请选择图片文件', 'error');
+                    return;
+                }
+                
+                // 预览图片
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const previewContainer = document.getElementById('previewContainer');
+                    
+                    // 检查是否已有预览图，如果有则更新，没有则创建
+                    let preview = document.getElementById('coverImagePreview');
+                    if (!preview) {
+                        preview = document.createElement('img');
+                        preview.id = 'coverImagePreview';
+                        preview.alt = '封面预览';
+                        previewContainer.innerHTML = '';
+                        previewContainer.appendChild(preview);
+                    }
+                    
+                    preview.src = e.target.result;
+                    document.getElementById('cover_image').value = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        // 取消按钮
+        document.getElementById('cancelBtn').addEventListener('click', function() {
+            if (confirm('确定要取消编辑吗？所有未保存的更改将丢失。')) {
+                window.location.href = '{{ url_for("auth.user_center") }}';
+            }
+        });
+        
+        // 预览按钮
+        document.getElementById('previewBtn').addEventListener('click', function() {
+            // 可以在这里实现预览功能，例如打开一个模态框显示渲染后的文章
+            showNotification('预览功能暂未实现', 'error');
+        });
+        
+        // 显示通知
+        function showNotification(message, type) {
+            const notification = document.getElementById('notification');
+            const notificationText = document.getElementById('notification-text');
+            
+            notificationText.textContent = message;
+            notification.className = 'notification ' + type;
+            notification.classList.add('show');
+            
+            // 自动隐藏
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+    </script>
+</body>
+</html> 
