@@ -1,0 +1,816 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Roboto', sans-serif;
+}
+
+body {
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    background-color: #0c0c14;
+}
+
+.container {
+    display: flex;
+    width: 100%;
+    height: 100vh;
+}
+
+/* 登录部分样式 */
+.login-section {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 60px;
+    position: relative;
+    z-index: 2;
+    background-color: #0c0c14;
+    border-radius: 12px 0 0 12px;
+}
+
+.login-content {
+    width: 100%;
+    max-width: 380px;
+}
+
+.logo {
+    color: #fff;
+    font-size: 22px;
+    font-weight: 500;
+    margin-bottom: 40px;
+}
+
+h1 {
+    color: #fff;
+    font-size: 36px;
+    font-weight: 500;
+    margin-bottom: 10px;
+}
+
+p {
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 40px;
+}
+
+.login-form {
+    width: 100%;
+    margin-top: 10px;
+}
+
+.google-btn {
+    width: 100%;
+    padding: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    color: #fff;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+}
+
+.google-btn svg {
+    margin-right: 12px;
+}
+
+.google-btn::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(transparent, rgba(255, 255, 255, 0.05), transparent);
+    transform: rotate(30deg);
+    transition: all 0.5s;
+    opacity: 0;
+}
+
+.google-btn:hover::after {
+    opacity: 1;
+    left: 100%;
+    top: 100%;
+    transition: all 0.5s;
+}
+
+.divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 25px 0;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.divider::before,
+.divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.divider span {
+    padding: 0 15px;
+    font-size: 14px;
+}
+
+/* 优化输入框样式和动画 */
+.form-group {
+    position: relative;
+    margin-bottom: 22px;
+}
+
+.form-group::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #7336f0, #9747FF, #5e34b3, #8a2be2);
+    background-size: 300% 100%;
+    transition: width 0.3s ease;
+    border-radius: 0 0 4px 4px;
+    z-index: 2;
+    opacity: 0;
+}
+
+.form-group.focus::after {
+    width: 100%;
+    opacity: 1;
+    animation: gradientFlow 2s linear infinite;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 16px 18px;
+    border-radius: 6px;
+    background-color: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff;
+    font-size: 15px;
+    letter-spacing: 0.5px;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.2);
+}
+
+input[type="text"]::placeholder,
+input[type="password"]::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+    transition: all 0.3s ease;
+}
+
+input[type="text"]:focus::placeholder,
+input[type="password"]:focus::placeholder {
+    opacity: 0;
+    transform: translateY(-10px);
+}
+
+/* 添加标签动画 */
+.form-group .input-label {
+    position: absolute;
+    left: 18px;
+    top: 16px;
+    font-size: 15px;
+    color: rgba(255, 255, 255, 0.4);
+    pointer-events: none;
+    transition: all 0.3s ease;
+    opacity: 0;
+    transform: translateY(10px);
+}
+
+.form-group.focus .input-label,
+.form-group.has-value .input-label {
+    opacity: 1;
+    top: -12px;
+    left: 12px;
+    font-size: 12px;
+    color: #8a5cf6;
+    transform: translateY(0);
+    background: rgba(15, 15, 30, 0.8);
+    padding: 0 6px;
+    border-radius: 4px;
+    letter-spacing: 0.5px;
+}
+
+/* 移除闪烁光标效果 */
+.form-group::before {
+    content: none;
+    display: none;
+}
+
+.form-group.focus::before {
+    opacity: 0;
+    display: none;
+}
+
+@keyframes blink {
+    0%, 100% {
+        opacity: 0;
+    }
+    50% {
+        opacity: 0;
+    }
+}
+
+@keyframes gradientFlow {
+    0% {
+        background-position: 0% 50%;
+    }
+    100% {
+        background-position: 100% 50%;
+    }
+}
+
+.toggle-password {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.4);
+    cursor: pointer;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.remember-me {
+    display: flex;
+    align-items: center;
+    margin-bottom: 28px;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 15px;
+}
+
+.remember-me input {
+    margin-right: 10px;
+    width: 16px;
+    height: 16px;
+    accent-color: #8a5cf6;
+}
+
+/* 更新登录按钮为流光溢彩效果 */
+.login-btn {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 6px;
+    position: relative;
+    overflow: hidden;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s;
+    background: linear-gradient(90deg, #7336f0, #9747FF, #5e34b3, #8a2be2, #4c1d95);
+    background-size: 400% 100%;
+    animation: gradientShift 5s ease infinite;
+    box-shadow: 0 3px 15px rgba(138, 43, 226, 0.4);
+    z-index: 1;
+}
+
+.login-btn::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    z-index: -1;
+    background: linear-gradient(90deg, #ff00cc, #7336f0, #00ffff, #7336f0, #ff00cc);
+    background-size: 500% 100%;
+    border-radius: 8px;
+    animation: gradientBorder 5s ease infinite;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.login-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(138, 43, 226, 0.6);
+}
+
+.login-btn:hover::before {
+    opacity: 1;
+}
+
+@keyframes gradientShift {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+@keyframes gradientBorder {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+.signup-link {
+    margin-top: 20px;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 14px;
+}
+
+.signup-link a {
+    color: #8a5cf6;
+    text-decoration: none;
+}
+
+.signup-link a:hover {
+    text-decoration: underline;
+}
+
+/* 视觉部分样式 */
+.visual-section {
+    flex: 1.2;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, #0c0c14, #131a2a);
+    border-radius: 0 12px 12px 0;
+}
+
+/* 动态背景效果 */
+.planet {
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    right: -150px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: linear-gradient(135deg, #372b7a, #6532bd);
+    border-radius: 50%;
+    box-shadow: 
+        inset -40px -20px 100px rgba(0, 0, 0, 0.6),
+        0 0 100px rgba(101, 50, 189, 0.3),
+        0 0 200px rgba(101, 50, 189, 0.1);
+    opacity: 0.9;
+    animation: rotatePlanet 120s linear infinite;
+}
+
+.planet::before {
+    content: '';
+    position: absolute;
+    width: 120%;
+    height: 20px;
+    left: -10%;
+    top: 50%;
+    transform: translateY(-50%) rotate(-20deg);
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
+}
+
+/* 添加行星轨道 */
+.orbit {
+    position: absolute;
+    width: 700px;
+    height: 300px;
+    right: -150px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    animation: rotateOrbit 60s linear infinite;
+}
+
+.small-planet {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #6c3fa8, #8b5fbf);
+    border-radius: 50%;
+    box-shadow: 0 0 20px rgba(138, 43, 226, 0.3);
+    left: 50px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+@keyframes rotatePlanet {
+    from {
+        transform: translateY(-50%) rotate(0deg);
+    }
+    to {
+        transform: translateY(-50%) rotate(360deg);
+    }
+}
+
+@keyframes rotateOrbit {
+    from {
+        transform: translateY(-50%) rotate(0deg);
+    }
+    to {
+        transform: translateY(-50%) rotate(360deg);
+    }
+}
+
+/* 更新星星样式 */
+.star {
+    position: absolute;
+    background-color: white;
+    border-radius: 50%;
+    filter: blur(0.5px);
+}
+
+.star.small {
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    animation: twinkleSmall ease infinite;
+}
+
+.star.medium {
+    width: 2px;
+    height: 2px;
+    opacity: 0;
+    animation: twinkleMedium ease infinite;
+}
+
+.star.large {
+    width: 3px;
+    height: 3px;
+    opacity: 0;
+    animation: twinkleLarge ease infinite;
+}
+
+@keyframes twinkleSmall {
+    0% {
+        opacity: 0;
+        transform: scale(0.5);
+    }
+    50% {
+        opacity: 0.7;
+        transform: scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(0.5);
+    }
+}
+
+@keyframes twinkleMedium {
+    0% {
+        opacity: 0;
+        transform: scale(0.5);
+    }
+    50% {
+        opacity: 0.9;
+        transform: scale(1.2);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(0.5);
+    }
+}
+
+@keyframes twinkleLarge {
+    0% {
+        opacity: 0;
+        transform: scale(0.5);
+        box-shadow: 0 0 2px rgba(255, 255, 255, 0.1);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.4);
+        box-shadow: 0 0 4px rgba(255, 255, 255, 0.4);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(0.5);
+        box-shadow: 0 0 2px rgba(255, 255, 255, 0.1);
+    }
+}
+
+/* 添加流星效果 */
+.shooting-star {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background-color: white;
+    border-radius: 50%;
+    filter: blur(0.6px);
+    animation: shootingStar linear;
+}
+
+.shooting-star::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 40px;
+    height: 2px;
+    background: linear-gradient(to right, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0));
+    transform: translateX(-100%) rotate(45deg);
+    transform-origin: right;
+}
+
+@keyframes shootingStar {
+    0% {
+        transform: translate(0, 0) rotate(45deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(300px, 300px) rotate(45deg);
+        opacity: 0;
+    }
+}
+
+.stars {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        radial-gradient(2px 2px at 20px 30px, #ffffff, rgba(0, 0, 0, 0)),
+        radial-gradient(2px 2px at 40px 70px, #ffffff, rgba(0, 0, 0, 0)),
+        radial-gradient(2px 2px at 50px 160px, #ffffff, rgba(0, 0, 0, 0)),
+        radial-gradient(2px 2px at 90px 40px, #ffffff, rgba(0, 0, 0, 0)),
+        radial-gradient(2px 2px at 130px 80px, #ffffff, rgba(0, 0, 0, 0)),
+        radial-gradient(2px 2px at 160px 120px, #ffffff, rgba(0, 0, 0, 0));
+    background-repeat: repeat;
+    background-size: 200px 200px;
+}
+
+.quote {
+    position: absolute;
+    bottom: 50px;
+    left: 50px;
+    max-width: 60%;
+    color: rgba(255, 255, 255, 0.8);
+    font-style: italic;
+    line-height: 1.6;
+}
+
+.author {
+    margin-top: 15px;
+    color: rgba(255, 255, 255, 0.6);
+    font-style: normal;
+    font-size: 14px;
+}
+
+/* 响应式设计 */
+@media (max-width: 992px) {
+    .container {
+        flex-direction: column;
+    }
+    
+    .login-section {
+        height: 100%;
+    }
+    
+    .visual-section {
+        display: none;
+    }
+}
+
+/* 输入打字效果 */
+@keyframes typingEffect {
+    0% {
+        transform: translateY(-2px) translateX(0);
+    }
+    25% {
+        transform: translateY(-2px) translateX(-1px);
+    }
+    75% {
+        transform: translateY(-2px) translateX(1px);
+    }
+    100% {
+        transform: translateY(-2px) translateX(0);
+    }
+}
+
+input.typing {
+    animation: typingEffect 0.1s ease;
+}
+
+/* 在聚焦时使表单组上的光标效果可见 */
+.form-group.focus .toggle-password {
+    color: rgba(255, 255, 255, 0.8);
+    transition: color 0.3s ease;
+}
+
+/* 微型行星样式 */
+.mini-planet {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: radial-gradient(circle at 30% 30%, #9676ff, #4c347b);
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(150, 118, 255, 0.6);
+    z-index: 1;
+}
+
+/* 星团样式 */
+.star-cluster {
+    position: absolute;
+    z-index: 1;
+}
+
+.cluster-star {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background-color: white;
+    border-radius: 50%;
+    opacity: 0.8;
+    filter: blur(0.5px);
+}
+
+/* 注册界面特有样式 */
+.terms-checkbox {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 28px;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.terms-checkbox input {
+    margin-right: 10px;
+    margin-top: 3px;
+    width: 16px;
+    height: 16px;
+    accent-color: #0d6efd;
+    cursor: pointer;
+}
+
+.terms-checkbox label {
+    flex: 1;
+}
+
+.terms-checkbox a {
+    color: #0d6efd;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.terms-checkbox a:hover {
+    color: #0b5ed7;
+    text-decoration: underline;
+}
+
+/* 支持email输入框 */
+input[type="email"] {
+    width: 100%;
+    padding: 16px 18px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    color: #fff;
+    font-size: 15px;
+    letter-spacing: 0.5px;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+input[type="email"]:focus {
+    outline: none;
+    border-color: #8a5cf6;
+    box-shadow: 0 0 0 3px rgba(138, 92, 246, 0.2);
+    transform: translateY(-2px);
+}
+
+input[type="email"]::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+    transition: all 0.3s ease;
+}
+
+input[type="email"]:focus::placeholder {
+    opacity: 0;
+    transform: translateY(-10px);
+}
+
+/* Phylum风格注册页样式 */
+.subtitle {
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 30px;
+    font-size: 15px;
+}
+
+.register-btn {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 6px;
+    position: relative;
+    overflow: hidden;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s;
+    background: #0d6efd;
+    box-shadow: 0 3px 15px rgba(13, 110, 253, 0.4);
+    z-index: 1;
+}
+
+.register-btn:hover {
+    background: #0b5ed7;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(13, 110, 253, 0.5);
+}
+
+.illustration {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Phylum风格的容器样式 */
+body.phylum-style {
+    background: linear-gradient(135deg, #13afca, #20ffe0);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+body.phylum-style .container {
+    max-width: 1200px;
+    max-height: 800px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+}
+
+/* 消息提示样式 */
+.message-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    max-width: 350px;
+    transform: translateX(400px);
+    transition: transform 0.3s ease-in-out;
+    z-index: 1000;
+}
+
+.message-container.show {
+    transform: translateX(0);
+}
+
+.message {
+    padding: 15px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    color: #fff;
+}
+
+.message.success {
+    background-color: #4CAF50;
+}
+
+.message.error {
+    background-color: #F44336;
+}
+
+.message.warning {
+    background-color: #FF9800;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 20px;
+    cursor: pointer;
+    margin-left: 15px;
+} 

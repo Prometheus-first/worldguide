@@ -1,0 +1,734 @@
+/* 基础样式 */
+:root {
+    --primary-color: #9370DB;
+    --primary-light: #B39DDB;
+    --primary-dark: #673AB7;
+    --accent-color: #FF4081;
+    --text-color: #f8f9fa;
+    --bg-color: #121212;
+    --card-bg: rgba(30, 30, 40, 0.7);
+    --input-bg: rgba(40, 40, 60, 0.3);
+    --shadow-color: rgba(147, 112, 219, 0.3);
+    --glow-color: rgba(147, 112, 219, 0.7);
+}
+
+/* 基础样式重置 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Roboto', sans-serif;
+}
+
+/* 炫酷背景效果 */
+body.phylum-style {
+    background: #0c0c14;
+    min-height: 100vh;
+    color: #fff;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+body.phylum-style.loaded {
+    opacity: 1;
+}
+
+.background-animation {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: 0;
+    overflow: hidden;
+}
+
+/* 渐变背景 - 紫色系 */
+.gradient-bg {
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    top: -50%;
+    left: -50%;
+    background: radial-gradient(circle at center, rgba(138, 43, 226, 0.4), transparent 30%),
+                radial-gradient(circle at 70% 80%, rgba(186, 85, 211, 0.5), transparent 40%),
+                radial-gradient(circle at 20% 30%, rgba(221, 160, 221, 0.35), transparent 35%);
+    animation: rotate 20s linear infinite;
+    z-index: 1;
+}
+
+/* 悬浮气泡效果 - 增强发光效果 */
+.bubbles {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+}
+
+.bubbles::before,
+.bubbles::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.12) 0%, transparent 10%),
+        radial-gradient(circle at 70% 60%, rgba(221, 160, 221, 0.15) 0%, transparent 15%),
+        radial-gradient(circle at 40% 80%, rgba(138, 43, 226, 0.12) 0%, transparent 10%),
+        radial-gradient(circle at 80% 20%, rgba(186, 85, 211, 0.15) 0%, transparent 12%),
+        radial-gradient(circle at 10% 70%, rgba(148, 0, 211, 0.12) 0%, transparent 8%);
+    animation: float 15s ease-in-out infinite alternate;
+    filter: blur(2px);
+}
+
+.bubbles::after {
+    animation-delay: -5s;
+    animation-duration: 20s;
+    filter: blur(3px);
+}
+
+/* Logo 样式 */
+.logo-container {
+    position: fixed;
+    top: 30px;
+    left: 40px;
+    z-index: 10;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    font-weight: 500;
+    font-size: 20px;
+    color: #fff;
+    text-decoration: none;
+}
+
+.logo svg {
+    margin-right: 10px;
+    filter: drop-shadow(0 0 5px rgba(138, 43, 226, 0.7));
+}
+
+.logo svg path:nth-child(2) {
+    fill: #9370DB;
+}
+
+.logo svg path:nth-child(1) {
+    stroke: #9370DB;
+}
+
+.logo span {
+    background: linear-gradient(90deg, #fff, #DA70D6);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    position: relative;
+}
+
+.logo span::after {
+    content: '';
+    position: absolute;
+    bottom: -3px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+    transition: width 0.3s;
+}
+
+.logo:hover span::after {
+    width: 100%;
+}
+
+/* 主容器样式 */
+.container {
+    position: relative;
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+    z-index: 5;
+    padding: 20px;
+}
+
+.content-wrapper {
+    display: flex;
+    background: rgba(15, 20, 30, 0.6);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3),
+                0 0 20px rgba(138, 43, 226, 0.25),
+                0 0 40px rgba(186, 85, 211, 0.2);
+    border: 1px solid rgba(186, 85, 211, 0.25);
+    animation: slide-up 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    transition: opacity 0.5s ease;
+    opacity: 0;
+}
+
+body.phylum-style.loaded .content-wrapper {
+    opacity: 1;
+}
+
+/* 插图部分 */
+.illustration-section {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+    background: rgba(138, 43, 226, 0.08);
+    position: relative;
+    overflow: hidden;
+}
+
+.illustration {
+    position: relative;
+    width: 300px;
+    height: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.glow-effect {
+    position: absolute;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: radial-gradient(circle at center, 
+        rgba(177, 156, 217, 0.8) 0%, 
+        rgba(147, 112, 219, 0.4) 40%, 
+        rgba(123, 104, 238, 0.2) 60%, 
+        transparent 100%);
+    filter: blur(15px);
+    animation: pulse 4s infinite alternate;
+    pointer-events: none;
+}
+
+.illustration img {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    filter: invert(1) drop-shadow(0 0 5px rgba(138, 43, 226, 0.7));
+    opacity: 0.8;
+    animation: float 6s infinite;
+}
+
+.icon-code {
+    top: 50px;
+    left: 70px;
+    animation: float-icon 6s ease-in-out infinite;
+}
+
+.icon-shield {
+    top: 180px;
+    left: 90px;
+    animation: float-icon 7s ease-in-out infinite;
+}
+
+.icon-document {
+    top: 100px;
+    right: 60px;
+    animation: float-icon 5s ease-in-out infinite;
+}
+
+.icon-key {
+    top: 200px;
+    right: 80px;
+    animation: float-icon 8s ease-in-out infinite;
+}
+
+/* 表单部分 */
+.form-section {
+    flex: 1;
+    padding: 50px;
+    position: relative;
+    z-index: 5;
+    background: rgba(15, 20, 30, 0.8);
+}
+
+h1 {
+    font-size: 28px;
+    font-weight: 500;
+    margin-bottom: 10px;
+    background: linear-gradient(90deg, #fff, #DA70D6);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.subtitle {
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 30px;
+    font-size: 15px;
+}
+
+.register-form {
+    width: 100%;
+    max-width: 400px;
+}
+
+/* 表单控件样式 */
+.form-group {
+    position: relative;
+    margin-bottom: 24px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.form-group.fade-in {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.form-group.focused label {
+    color: #9370DB;
+    font-weight: 500;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 14px 16px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff;
+    font-size: 15px;
+    transition: all 0.3s ease;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #9370DB;
+    box-shadow: 0 0 0 3px rgba(138, 43, 226, 0.25);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.form-group input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+    transition: opacity 0.3s;
+}
+
+.form-group input:focus::placeholder {
+    opacity: 0;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 12px;
+    top: 44px;
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.4);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+    transition: color 0.3s;
+}
+
+.toggle-password:hover {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* 条款复选框 */
+.terms-checkbox {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 28px;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 14px;
+    line-height: 1.4;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.terms-checkbox.fade-in {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.terms-checkbox input {
+    margin-right: 10px;
+    margin-top: 3px;
+    width: 16px;
+    height: 16px;
+    accent-color: #9370DB;
+    cursor: pointer;
+}
+
+.terms-checkbox label {
+    flex: 1;
+}
+
+.terms-checkbox a {
+    color: #DA70D6;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.terms-checkbox a:hover {
+    color: #BA55D3;
+    text-decoration: underline;
+}
+
+/* 注册按钮样式 - 增强流光效果 */
+.register-btn {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 8px;
+    position: relative;
+    overflow: hidden;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    background: linear-gradient(45deg, #8A2BE2, #9370DB);
+    transition: all 0.3s ease;
+    z-index: 1;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease, box-shadow 0.3s ease;
+    box-shadow: 0 0 15px rgba(138, 43, 226, 0.3);
+    animation: btnGlowPulse 4s infinite ease-in-out;
+}
+
+.register-btn.fade-in {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.register-btn span {
+    position: relative;
+    z-index: 2;
+    transition: letter-spacing 0.3s ease;
+}
+
+.btn-glow {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 70%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+        transparent, 
+        rgba(255, 255, 255, 0.2) 30%, 
+        rgba(255, 255, 255, 0.4) 50%, 
+        rgba(255, 255, 255, 0.2) 70%, 
+        transparent);
+    transform: skewX(-25deg);
+    animation: btnSweepLight 3s ease-in-out infinite;
+    z-index: 1;
+}
+
+.register-btn:hover {
+    background: linear-gradient(45deg, #9932CC, #BA55D3);
+    box-shadow: 0 0 25px rgba(138, 43, 226, 0.6),
+                0 0 15px rgba(186, 85, 211, 0.4);
+    transform: translateY(-2px);
+}
+
+.register-btn:hover span {
+    letter-spacing: 0.5px;
+}
+
+.register-btn:hover .btn-glow {
+    animation-duration: 1.5s;
+}
+
+/* 按钮扫光动画 */
+@keyframes btnSweepLight {
+    0% {
+        left: -100%;
+    }
+    40% {
+        left: 100%;
+    }
+    100% {
+        left: 100%;
+    }
+}
+
+/* 按钮脉冲发光效果 */
+@keyframes btnGlowPulse {
+    0% {
+        box-shadow: 0 0 15px rgba(138, 43, 226, 0.3);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(138, 43, 226, 0.5),
+                    0 0 30px rgba(186, 85, 211, 0.3);
+    }
+    100% {
+        box-shadow: 0 0 15px rgba(138, 43, 226, 0.3);
+    }
+}
+
+/* 按钮边缘微光 */
+.register-btn::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(138, 43, 226, 0.5);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.register-btn:hover::after {
+    opacity: 1;
+}
+
+/* 登录链接 */
+.login-link {
+    margin-top: 20px;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 14px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.login-link.fade-in {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.login-link a {
+    color: #DA70D6;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.login-link a:hover {
+    color: #BA55D3;
+    text-decoration: underline;
+}
+
+/* 动画效果 - 增强旋转和悬浮效果 */
+@keyframes rotate {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0) scale(1);
+    }
+    50% {
+        transform: translateY(-20px) scale(1.05);
+    }
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(0.8);
+        opacity: 0.4;
+    }
+    100% {
+        transform: scale(1.2);
+        opacity: 0.8;
+    }
+}
+
+@keyframes float-icon {
+    0%, 100% {
+        transform: translateY(0) rotate(0deg);
+    }
+    50% {
+        transform: translateY(-10px) rotate(5deg);
+    }
+}
+
+@keyframes move-glow {
+    0% {
+        top: -50%;
+        left: -50%;
+    }
+    100% {
+        top: 50%;
+        left: 50%;
+    }
+}
+
+@keyframes float-bubble {
+    0% {
+        transform: translateY(0) translateX(0) scale(1);
+        opacity: 0.6;
+    }
+    33% {
+        transform: translateY(-30px) translateX(20px) scale(1.02);
+        opacity: 0.8;
+    }
+    66% {
+        transform: translateY(20px) translateX(-15px) scale(0.98);
+        opacity: 0.7;
+    }
+    100% {
+        transform: translateY(-15px) translateX(-20px) scale(1);
+        opacity: 0.6;
+    }
+}
+
+/* 气泡样式 */
+.bubble {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle at center, rgba(186, 85, 211, 0.6), rgba(138, 43, 226, 0.2) 70%, transparent);
+    filter: blur(2px);
+    animation: float-bubble 15s infinite ease-in-out;
+    opacity: 0.6;
+}
+
+.bubble:nth-child(1) {
+    width: 120px;
+    height: 120px;
+    top: 20%;
+    left: 10%;
+    animation-delay: 0s;
+}
+
+.bubble:nth-child(2) {
+    width: 80px;
+    height: 80px;
+    top: 60%;
+    left: 85%;
+    animation-delay: -5s;
+}
+
+.bubble:nth-child(3) {
+    width: 150px;
+    height: 150px;
+    top: 80%;
+    left: 30%;
+    animation-delay: -10s;
+}
+
+/* 响应式调整 */
+@media (max-width: 900px) {
+    .content-wrapper {
+        flex-direction: column;
+    }
+    
+    .illustration-section {
+        height: 250px;
+        padding: 20px;
+    }
+    
+    .form-section {
+        padding: 30px;
+    }
+    
+    .register-form {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 500px) {
+    .logo-container {
+        position: relative;
+        top: 0;
+        left: 0;
+        margin-bottom: 20px;
+        justify-content: center;
+        display: flex;
+    }
+    
+    .form-section {
+        padding: 20px;
+    }
+    
+    h1 {
+        font-size: 24px;
+    }
+}
+
+@keyframes fade-in {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes slide-up {
+    0% {
+        opacity: 0;
+        transform: translateY(40px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 消息提示样式 */
+.message-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    max-width: 350px;
+    transform: translateX(400px);
+    transition: transform 0.3s ease-in-out;
+    z-index: 1000;
+}
+
+.message-container.show {
+    transform: translateX(0);
+}
+
+.message {
+    padding: 15px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    color: #fff;
+}
+
+.message.success {
+    background-color: #4CAF50;
+}
+
+.message.error {
+    background-color: #F44336;
+}
+
+.message.warning {
+    background-color: #FF9800;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 20px;
+    cursor: pointer;
+    margin-left: 15px;
+} 

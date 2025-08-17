@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人中心 - 世界指南</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+        }
+        
+        body {
+            background-color: #0c0c14;
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        /* 背景动画效果 */
+        .background-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        .gradient-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 15% 50%, #170a3a, transparent 25%),
+                         radial-gradient(circle at 85% 30%, #260f4c, transparent 25%);
+            opacity: 0.4;
+        }
+        
+        .stars {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .star {
+            position: absolute;
+            background-color: #fff;
+            border-radius: 50%;
+            opacity: 0;
+            animation: twinkle 2s infinite ease-in-out;
+        }
+        
+        @keyframes twinkle {
+            0% { opacity: 0; }
+            50% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+        
+        /* 导航栏样式 */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 50px;
+            position: relative;
+            z-index: 5;
+            background-color: rgba(12, 12, 20, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            color: #fff;
+            font-weight: 500;
+            font-size: 22px;
+            text-decoration: none;
+            position: relative;
+        }
+        
+        .logo svg {
+            margin-right: 10px;
+            position: relative;
+            z-index: 1;
+            fill: #9747FF;
+        }
+        
+        .logo::after {
+            content: '';
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: radial-gradient(circle, rgba(147, 112, 219, 0.5), transparent 70%);
+            border-radius: 50%;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 0;
+            filter: blur(5px);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .nav-links a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-size: 15px;
+            transition: all 0.3s;
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: 1px solid transparent;
+        }
+        
+        .nav-links a:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .nav-links a.active {
+            color: #9747FF;
+            background: rgba(147, 112, 219, 0.1);
+            border-color: rgba(147, 112, 219, 0.2);
+        }
+        
+        /* 主要内容区域 */
+        .main-container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 1fr 3fr;
+            gap: 30px;
+        }
+        
+        /* 用户信息卡片 */
+        .user-profile {
+            background-color: rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            position: sticky;
+            top: 80px;
+            align-self: flex-start;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s;
+        }
+        
+        .user-profile:hover {
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2), 0 0 15px rgba(147, 112, 219, 0.3);
+            border-color: rgba(147, 112, 219, 0.3);
+        }
+        
+        .user-banner {
+            height: 80px;
+            background: linear-gradient(135deg, #7336f0, #9747FF);
+            position: relative;
+        }
+        
+        .user-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: #9747FF;
+            font-weight: bold;
+            position: absolute;
+            bottom: -40px;
+            left: 30px;
+            border: 4px solid rgba(12, 12, 20, 1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .user-info {
+            padding: 50px 20px 20px;
+        }
+        
+        .user-name {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #fff;
+        }
+        
+        .user-email {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 10px;
+            background-color: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s;
+        }
+        
+        .stat-item:hover {
+            background-color: rgba(147, 112, 219, 0.1);
+            border-color: rgba(147, 112, 219, 0.2);
+        }
+        
+        .stat-number {
+            font-size: 20px;
+            font-weight: 600;
+            color: #9747FF;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .user-actions {
+            display: grid;
+            gap: 10px;
+        }
+        
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background-color: rgba(255, 255, 255, 0.03);
+            color: rgba(255, 255, 255, 0.7);
+            padding: 12px 15px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+            text-decoration: none;
+            justify-content: center;
+        }
+        
+        .action-btn:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+        
+        .action-btn.primary {
+            background: linear-gradient(45deg, #7336f0, #9747FF);
+            color: white;
+            border: none;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .action-btn.primary::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(transparent, rgba(255, 255, 255, 0.1), transparent);
+            transform: rotate(30deg);
+            transition: all 0.5s;
+            opacity: 0;
+        }
+        
+        .action-btn.primary:hover {
+            box-shadow: 0 0 15px rgba(147, 112, 219, 0.5);
+            transform: translateY(-2px);
+        }
+        
+        .action-btn.primary:hover::before {
+            opacity: 1;
+            left: 100%;
+            top: 100%;
+            transition: all 0.5s;
+        }
+        
+        /* 内容区域 */
+        .content-area {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        
+        .tab-container {
+            background-color: rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s;
+        }
+        
+        .tab-container:hover {
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2), 0 0 15px rgba(147, 112, 219, 0.3);
+            border-color: rgba(147, 112, 219, 0.3);
+        }
+        
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 15px;
+            cursor: pointer;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.6);
+            transition: all 0.3s;
+            border-bottom: 2px solid transparent;
+        }
+        
+        .tab:hover {
+            color: rgba(255, 255, 255, 0.8);
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+        
+        .tab.active {
+            color: #9747FF;
+            border-bottom-color: #9747FF;
+            background-color: rgba(147, 112, 219, 0.05);
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 20px;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* 文章列表 */
+        .articles-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .article-item {
+            display: flex;
+            background-color: rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .article-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2), 0 0 15px rgba(147, 112, 219, 0.3);
+            border-color: rgba(147, 112, 219, 0.3);
+        }
+        
+        .article-image {
+            width: 150px;
+            height: 100%;
+            min-height: 120px;
+            background-color: rgba(255, 255, 255, 0.03);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255, 255, 255, 0.3);
+        }
+        
+        .article-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .article-details {
+            flex: 1;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .article-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #fff;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .article-title:hover {
+            color: #9747FF;
+        }
+        
+        .article-excerpt {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 10px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            flex-grow: 1;
+        }
+        
+        .article-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .meta-info {
+            display: flex;
+            gap: 15px;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 12px;
+        }
+        
+        .meta-info span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .article-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .article-btn {
+            background: none;
+            border: none;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            padding: 5px;
+            transition: all 0.3s;
+        }
+        
+        .article-btn:hover {
+            color: #9747FF;
+        }
+        
+        .article-btn.delete:hover {
+            color: #ff4757;
+        }
+        
+        /* 空状态 */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 15px;
+            color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .empty-state h3 {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .empty-state p {
+            font-size: 14px;
+            margin-bottom: 20px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        /* 确认对话框 */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+            backdrop-filter: blur(5px);
+        }
+        
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal-content {
+            background-color: rgba(18, 18, 30, 0.95);
+            border-radius: 16px;
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+            transform: translateY(20px);
+            transition: transform 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .modal.active .modal-content {
+            transform: translateY(0);
+        }
+        
+        .modal-header {
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .modal-header h3 {
+            font-size: 18px;
+            margin-bottom: 5px;
+            color: #fff;
+        }
+        
+        .modal-header p {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .modal-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .modal-btn.cancel {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .modal-btn.cancel:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+        
+        .modal-btn.confirm {
+            background: linear-gradient(45deg, #e74c3c, #ff4757);
+            color: #fff;
+        }
+        
+        .modal-btn.confirm:hover {
+            box-shadow: 0 0 15px rgba(255, 71, 87, 0.5);
+            transform: translateY(-2px);
+        }
+        
+        /* 通知消息 */
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: rgba(18, 18, 30, 0.9);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 1000;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+        }
+        
+        .notification.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .notification i {
+            font-size: 20px;
+        }
+        
+        .notification.success {
+            border-left: 4px solid #2ecc71;
+        }
+        
+        .notification.success i {
+            color: #2ecc71;
+        }
+        
+        .notification.error {
+            border-left: 4px solid #ff4757;
+        }
+        
+        .notification.error i {
+            color: #ff4757;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 992px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .user-profile {
+                position: static;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .article-item {
+                flex-direction: column;
+            }
+            
+            .article-image {
+                width: 100%;
+                height: 150px;
+            }
+            
+            .stats-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .stat-item:last-child {
+                grid-column: span 2;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .article-meta {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .article-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="background-animation">
+        <div class="gradient-bg"></div>
+        <div class="stars"></div>
+    </div>
+    
+    <header>
+        <div class="navbar">
+            <a href="{{ url_for('auth.home_page') }}" class="logo">
+                <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 3L3 8.6v6.8L12 21l9-5.6V8.6L12 3z"/>
+                    <circle cx="12" cy="12" r="2"/>
+                </svg>
+                世界指南
+            </a>
+            
+            <div class="nav-links">
+                <a href="/">首页</a>
+                <a href="{{ url_for('auth.articles') }}">文章</a>
+                <a href="#">热门</a>
+                <a href="#">最新</a>
+                <a href="{{ url_for('auth.user_center') }}" class="active">个人中心</a>
+                <a href="{{ url_for('auth.logout') }}">退出</a>
+                <a href="{{ url_for('auth.publish_article_page') }}" class="create-article-btn">创建文章</a>
+            </div>
+        </div>
+    </header>
+    
+    <main class="main-container">
+        <!-- 用户信息 -->
+        <section class="user-profile">
+            <div class="user-banner">
+                <div class="user-avatar">{{ user.username[0]|upper }}</div>
+            </div>
+            <div class="user-info">
+                <h2 class="user-name">{{ user.username }}</h2>
+                <p class="user-email">{{ user.email }}</p>
+                
+                <div class="stats-container">
+                    <div class="stat-item">
+                        <div class="stat-number">{{ user.total_articles }}</div>
+                        <div class="stat-label">文章</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">{{ user.total_views }}</div>
+                        <div class="stat-label">阅读数</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">{{ user.total_likes }}</div>
+                        <div class="stat-label">点赞数</div>
+                    </div>
+                </div>
+                
+                <div class="user-actions">
+                    <a href="{{ url_for('auth.publish_article_page') }}" class="action-btn primary">
+                        <i class="fas fa-edit"></i> 写文章
+                    </a>
+                    <button class="action-btn">
+                        <i class="fas fa-user-edit"></i> 编辑资料
+                    </button>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 内容区域 -->
+        <section class="content-area">
+            <div class="tab-container">
+                <div class="tabs">
+                    <div class="tab active" data-tab="published">已发布 ({{ articles|length }})</div>
+                    <div class="tab" data-tab="draft">草稿箱 ({{ drafts|length }})</div>
+                </div>
+                
+                <!-- 已发布文章 -->
+                <div class="tab-content active" id="published">
+                    {% if articles %}
+                        <div class="articles-list">
+                            {% for article in articles %}
+                                <div class="article-item">
+                                    <div class="article-image">
+                                        {% if article.cover_image %}
+                                            <img src="{{ article.cover_image }}" alt="{{ article.title }}">
+                                        {% else %}
+                                            <i class="fas fa-image fa-2x"></i>
+                                        {% endif %}
+                                    </div>
+                                    <div class="article-details">
+                                        <a href="{{ url_for('auth.article_detail', article_id=article._id) }}" class="article-title">{{ article.title }}</a>
+                                        <p class="article-excerpt">{{ article.excerpt }}</p>
+                                        <div class="article-meta">
+                                            <div class="meta-info">
+                                                <span><i class="fas fa-eye"></i> {{ article.views|default(0) }}</span>
+                                                <span><i class="fas fa-thumbs-up"></i> {{ article.likes|default(0) }}</span>
+                                                <span><i class="fas fa-calendar"></i> {{ article.created_at_formatted }}</span>
+                                            </div>
+                                            <div class="article-actions">
+                                                <a href="{{ url_for('auth.edit_article_page', article_id=article._id) }}" class="article-btn">
+                                                    <i class="fas fa-edit"></i> 编辑
+                                                </a>
+                                                <button class="article-btn delete" onclick="confirmDelete('{{ article._id }}', '{{ article.title }}')">
+                                                    <i class="fas fa-trash"></i> 删除
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="empty-state">
+                            <i class="fas fa-file-alt"></i>
+                            <h3>暂无已发布文章</h3>
+                            <p>您还没有发布任何文章，点击下方按钮开始创作吧！</p>
+                            <a href="{{ url_for('auth.publish_article_page') }}" class="action-btn primary">
+                                <i class="fas fa-edit"></i> 写文章
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <!-- 草稿箱 -->
+                <div class="tab-content" id="draft">
+                    {% if drafts %}
+                        <div class="articles-list">
+                            {% for draft in drafts %}
+                                <div class="article-item">
+                                    <div class="article-image">
+                                        <i class="fas fa-file-alt fa-2x"></i>
+                                    </div>
+                                    <div class="article-details">
+                                        <h3 class="article-title">{{ draft.title or '无标题草稿' }}</h3>
+                                        <p class="article-excerpt">{{ draft.content[:150] + '...' if draft.content else '无内容' }}</p>
+                                        <div class="article-meta">
+                                            <div class="meta-info">
+                                                <span><i class="fas fa-calendar"></i> {{ draft.updated_at_formatted }}</span>
+                                                <span><i class="fas fa-folder"></i> {{ draft.category or '未分类' }}</span>
+                                            </div>
+                                            <div class="article-actions">
+                                                <a href="{{ url_for('auth.publish_article_page') }}?draft_id={{ draft._id }}" class="article-btn">
+                                                    <i class="fas fa-edit"></i> 继续编辑
+                                                </a>
+                                                <button class="article-btn delete" onclick="confirmDeleteDraft('{{ draft._id }}', '{{ draft.title or '无标题草稿' }}')">
+                                                    <i class="fas fa-trash"></i> 删除
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="empty-state">
+                            <i class="fas fa-clipboard"></i>
+                            <h3>暂无草稿</h3>
+                            <p>您的草稿箱是空的，可以通过保存草稿功能来存储未完成的文章</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <!-- 确认删除对话框 -->
+    <div class="modal" id="deleteModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>确认删除</h3>
+                <p>您确定要删除此文章吗？此操作无法撤销。</p>
+            </div>
+            <p id="deleteArticleTitle" style="text-align: center; margin: 20px 0; font-weight: 500; color: #fff;"></p>
+            <div class="modal-footer">
+                <button class="modal-btn cancel" onclick="closeModal()">取消</button>
+                <button class="modal-btn confirm" id="confirmDeleteBtn">确认删除</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 通知消息 -->
+    <div class="notification" id="notification">
+        <i class="fas fa-check-circle"></i>
+        <span id="notification-text">操作成功</span>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 创建星星背景
+            createStars();
+            
+            // 标签切换
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
+                    
+                    // 移除所有激活状态
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+                    
+                    // 激活当前标签和内容
+                    this.classList.add('active');
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+        });
+        
+        // 创建星星背景
+        function createStars() {
+            const stars = document.querySelector('.stars');
+            const starsCount = 200;
+            
+            for (let i = 0; i < starsCount; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                
+                // 随机大小
+                const size = Math.random() * 2;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                
+                // 随机位置
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.top = `${Math.random() * 100}%`;
+                
+                // 随机动画延迟
+                star.style.animationDelay = `${Math.random() * 5}s`;
+                
+                // 随机动画持续时间
+                star.style.animationDuration = `${Math.random() * 3 + 2}s`;
+                
+                stars.appendChild(star);
+            }
+        }
+        
+        // 删除文章确认
+        function confirmDelete(articleId, articleTitle) {
+            const modal = document.getElementById('deleteModal');
+            const deleteArticleTitle = document.getElementById('deleteArticleTitle');
+            const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+            
+            deleteArticleTitle.textContent = articleTitle;
+            modal.classList.add('active');
+            
+            // 设置确认按钮的点击事件
+            confirmDeleteBtn.onclick = function() {
+                deleteArticle(articleId);
+            };
+        }
+        
+        // 删除草稿确认
+        function confirmDeleteDraft(draftId, draftTitle) {
+            const modal = document.getElementById('deleteModal');
+            const deleteArticleTitle = document.getElementById('deleteArticleTitle');
+            const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+            
+            deleteArticleTitle.textContent = draftTitle;
+            modal.classList.add('active');
+            
+            // 设置确认按钮的点击事件
+            confirmDeleteBtn.onclick = function() {
+                deleteDraft(draftId);
+            };
+        }
+        
+        // 关闭对话框
+        function closeModal() {
+            const modal = document.getElementById('deleteModal');
+            modal.classList.remove('active');
+        }
+        
+        // 删除文章
+        function deleteArticle(articleId) {
+            fetch(`/auth/api/article/delete/${articleId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'same-origin'
+            })
+            .then(response => response.json())
+            .then(data => {
+                closeModal();
+                
+                if (data.success) {
+                    showNotification('文章已成功删除', 'success');
+                    // 延迟后刷新页面
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1500);
+                } else {
+                    showNotification(data.message || '删除失败', 'error');
+                }
+            })
+            .catch(error => {
+                closeModal();
+                console.error('删除文章错误:', error);
+                showNotification('删除文章失败，请稍后重试', 'error');
+            });
+        }
+        
+        // 删除草稿
+        function deleteDraft(draftId) {
+            fetch(`/auth/api/draft/delete/${draftId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'same-origin'
+            })
+            .then(response => response.json())
+            .then(data => {
+                closeModal();
+                
+                if (data.success) {
+                    showNotification('草稿已成功删除', 'success');
+                    // 延迟后刷新页面
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1500);
+                } else {
+                    showNotification(data.message || '删除失败', 'error');
+                }
+            })
+            .catch(error => {
+                closeModal();
+                console.error('删除草稿错误:', error);
+                showNotification('删除草稿失败，请稍后重试', 'error');
+            });
+        }
+        
+        // 显示通知
+        function showNotification(message, type) {
+            const notification = document.getElementById('notification');
+            const notificationText = document.getElementById('notification-text');
+            
+            notificationText.textContent = message;
+            notification.className = 'notification ' + type;
+            notification.classList.add('show');
+            
+            // 自动隐藏
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+    </script>
+</body>
+</html> 

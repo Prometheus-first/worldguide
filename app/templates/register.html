@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/register.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <title>注册账户</title>
+</head>
+<body class="phylum-style">
+    <div class="background-animation">
+        <div class="gradient-bg"></div>
+        <div class="bubbles"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+    </div>
+    
+    <div class="logo-container">
+        <a href="#" class="logo">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 3L3 8.6v6.8L12 21l9-5.6V8.6L12 3z" stroke="#9370DB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M12 14a2 2 0 100-4 2 2 0 000 4z" fill="#9370DB"/>
+            </svg>
+            <span>世界指南</span>
+        </a>
+    </div>
+    
+    <div class="container">
+        <div class="content-wrapper">
+            <div class="illustration-section">
+                <div class="glow-effect"></div>
+                <div class="illustration">
+                    <img src="https://cdn-icons-png.flaticon.com/512/2621/2621040.png" class="icon-code" alt="Code icon">
+                    <img src="https://cdn-icons-png.flaticon.com/512/2313/2313448.png" class="icon-shield" alt="Shield icon">
+                    <img src="https://cdn-icons-png.flaticon.com/512/839/839860.png" class="icon-document" alt="Document icon">
+                    <img src="https://cdn-icons-png.flaticon.com/512/2518/2518048.png" class="icon-key" alt="Key icon">
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <h1>创建您的账户</h1>
+                <p class="subtitle">加入我们的平台，体验流畅安全的服务</p>
+                
+                <form id="register-form" class="register-form">
+                    <div class="form-group">
+                        <label for="username" class="input-label">用户名</label>
+                        <input type="text" id="username" placeholder="输入您的用户名" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email" class="input-label">邮箱地址</label>
+                        <input type="email" id="email" placeholder="输入您的邮箱地址" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password" class="input-label">密码</label>
+                        <input type="password" id="password" placeholder="设置强密码" required>
+                        <button type="button" class="toggle-password" onclick="document.getElementById('password').type = document.getElementById('password').type === 'password' ? 'text' : 'password';">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M12 14a2 2 0 100-4 2 2 0 000 4z" fill="currentColor"/>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="confirm-password" class="input-label">确认密码</label>
+                        <input type="password" id="confirm-password" placeholder="再次输入密码" required>
+                        <button type="button" class="toggle-password" onclick="document.getElementById('confirm-password').type = document.getElementById('confirm-password').type === 'password' ? 'text' : 'password';">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M12 14a2 2 0 100-4 2 2 0 000 4z" fill="currentColor"/>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <div class="terms-checkbox">
+                        <input type="checkbox" id="terms" required>
+                        <label for="terms">我已阅读并同意 <a href="#">服务条款</a> 和 <a href="#">隐私政策</a></label>
+                    </div>
+                    
+                    <button type="button" id="register-btn" class="register-btn">
+                        <div class="btn-glow"></div>
+                        <span>创建账户</span>
+                    </button>
+                    
+                    <div class="login-link">
+                        已有账户? <a href="{{ url_for('auth.login_page') }}">立即登录</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div id="message-container" class="message-container">
+        <div class="message success">
+            <span id="message-text"></span>
+            <button class="close-btn">×</button>
+        </div>
+    </div>
+    
+    <script src="{{ url_for('static', filename='js/register.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 添加短暂延迟后标记页面已加载
+            setTimeout(function() {
+                document.body.classList.add('loaded');
+            }, 100);
+            
+            // 表单组件淡入动画
+            setTimeout(function() {
+                document.querySelectorAll('.form-group, .terms-checkbox, .register-btn, .login-link').forEach(function(el, index) {
+                    setTimeout(function() {
+                        el.classList.add('fade-in');
+                    }, index * 150);
+                });
+            }, 500);
+            
+            // 添加输入框聚焦效果
+            document.querySelectorAll('.form-group input').forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.parentElement.classList.add('focused');
+                });
+                
+                input.addEventListener('blur', function() {
+                    this.parentElement.classList.remove('focused');
+                });
+            });
+            
+            // 添加随机动画效果
+            const glow = document.querySelector('.glow-effect');
+            
+            function moveGlow() {
+                const x = Math.random() * 100;
+                const y = Math.random() * 100;
+                glow.style.left = `${x}%`;
+                glow.style.top = `${y}%`;
+                
+                setTimeout(moveGlow, 5000);
+            }
+            
+            moveGlow();
+            
+            // 消息提示
+            const messageContainer = document.getElementById('message-container');
+            const messageText = document.getElementById('message-text');
+            const closeBtn = document.querySelector('.close-btn');
+            
+            // 关闭消息提示
+            closeBtn.addEventListener('click', function() {
+                messageContainer.classList.remove('show');
+            });
+            
+            // 注册表单提交
+            document.getElementById('register-btn').addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const username = document.getElementById('username').value;
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                const confirmPassword = document.getElementById('confirm-password').value;
+                const terms = document.getElementById('terms').checked;
+                
+                // 表单验证
+                if (!username || !email || !password || !confirmPassword) {
+                    showMessage('请填写所有必填字段', 'error');
+                    return;
+                }
+                
+                if (password !== confirmPassword) {
+                    showMessage('两次输入的密码不一致', 'error');
+                    return;
+                }
+                
+                if (!terms) {
+                    showMessage('请同意服务条款和隐私政策', 'error');
+                    return;
+                }
+                
+                // 创建表单数据
+                const formData = new FormData();
+                formData.append('username', username);
+                formData.append('email', email);
+                formData.append('password', password);
+                formData.append('confirm_password', confirmPassword);
+                
+                // 发送注册请求
+                fetch('/auth/api/register', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showMessage(data.message, 'success');
+                        
+                        // 延迟后重定向到登录页面
+                        setTimeout(() => {
+                            window.location.href = '{{ url_for('auth.login_page') }}';
+                        }, 1500);
+                    } else {
+                        showMessage(data.message, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('注册错误:', error);
+                    showMessage('注册过程中发生错误，请重试', 'error');
+                });
+            });
+            
+            // 显示消息提示
+            function showMessage(message, type) {
+                messageText.textContent = message;
+                messageContainer.className = 'message-container show';
+                messageContainer.querySelector('.message').className = `message ${type}`;
+                
+                // 自动关闭消息
+                setTimeout(() => {
+                    messageContainer.classList.remove('show');
+                }, 5000);
+            }
+        });
+    </script>
+</body>
+</html> 
