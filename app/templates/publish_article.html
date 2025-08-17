@@ -284,6 +284,17 @@
             overflow-y: auto;
         }
         
+        /* 确保所有粘贴或插入的图片都有正确的尺寸 */
+        .content-area img {
+            max-width: 100% !important;
+            height: auto !important;
+            max-height: 400px !important;
+            object-fit: contain !important;
+            border-radius: 8px !important;
+            display: block !important;
+            margin: 10px auto !important;
+        }
+        
         /* 内容块容器样式 */
         .content-block {
             position: relative;
@@ -709,6 +720,28 @@
             border-color: rgba(255, 82, 82, 0.3);
         }
         
+        /* 图片块样式 */
+        .image-block {
+            width: 100%;
+            text-align: center;
+            padding: 10px;
+            border-radius: 8px;
+        }
+        
+        .image-block img {
+            max-width: 100%;
+            height: auto;
+            max-height: 400px;
+            object-fit: contain;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        
+        .image-block img:hover {
+            transform: scale(1.02);
+        }
+        
         /* 图片上传占位符 */
         .image-upload-placeholder {
             display: flex;
@@ -928,8 +961,12 @@
         
         .preview-content img {
             max-width: 100%;
+            height: auto;
+            max-height: 400px;
+            object-fit: contain;
             border-radius: 8px;
             margin: 15px 0;
+            cursor: pointer;
         }
         
         .preview-content blockquote {
@@ -1732,7 +1769,22 @@
                                         img.src = e.target.result;
                                         img.alt = '文章图片';
                                         img.style.maxWidth = '100%';
+                                        img.style.height = 'auto';
+                                        img.style.maxHeight = '400px';
+                                        img.style.objectFit = 'contain';
                                         img.style.borderRadius = '8px';
+                                        img.style.cursor = 'pointer';
+                                        img.style.transition = 'transform 0.2s ease';
+                                        img.style.display = 'block';
+                                        img.style.margin = '0 auto';
+                                        
+                                        // 添加悬停效果
+                                        img.addEventListener('mouseenter', function() {
+                                            this.style.transform = 'scale(1.02)';
+                                        });
+                                        img.addEventListener('mouseleave', function() {
+                                            this.style.transform = 'scale(1)';
+                                        });
                                         
                                         // 清空内容块并添加图片
                                         contentBlock.innerHTML = '';
@@ -2342,7 +2394,7 @@
                             htmlContent += `<h2>${block.content}</h2>`;
                             break;
                         case 'image':
-                            htmlContent += `<div class="article-image"><img src="${block.content}" alt="文章图片"></div>`;
+                            htmlContent += `<div class="article-image" style="text-align: center; margin: 20px 0;"><img src="${block.content}" alt="文章图片" style="max-width: 100%; height: auto; max-height: 400px; object-fit: contain; border-radius: 8px; display: block; margin: 0 auto;"></div>`;
                             break;
                         case 'code':
                             const language = block.language ? ` class="language-${block.language}"` : ` class="language-python"`;
@@ -2815,6 +2867,56 @@
                 }
             }, true);
 
+            // 添加粘贴事件处理器，自动调整粘贴图片的尺寸
+            document.addEventListener('paste', function(e) {
+                const target = e.target;
+                
+                // 只处理可编辑的文本块
+                if (!target.classList.contains('text-block') || 
+                    target.getAttribute('contenteditable') !== 'true') {
+                    return;
+                }
+                
+                // 延迟处理，让粘贴操作先完成
+                setTimeout(function() {
+                    // 查找刚粘贴的图片
+                    const images = target.querySelectorAll('img');
+                    
+                    images.forEach(function(img) {
+                        // 检查是否是新粘贴的图片（没有我们的样式类）
+                        if (!img.hasAttribute('data-styled')) {
+                            // 应用我们的样式
+                            img.style.maxWidth = '100%';
+                            img.style.height = 'auto';
+                            img.style.maxHeight = '400px';
+                            img.style.objectFit = 'contain';
+                            img.style.borderRadius = '8px';
+                            img.style.cursor = 'pointer';
+                            img.style.transition = 'transform 0.2s ease';
+                            img.style.display = 'block';
+                            img.style.margin = '10px auto';
+                            
+                            // 标记为已处理
+                            img.setAttribute('data-styled', 'true');
+                            
+                            // 添加悬停效果
+                            img.addEventListener('mouseenter', function() {
+                                this.style.transform = 'scale(1.02)';
+                            });
+                            img.addEventListener('mouseleave', function() {
+                                this.style.transform = 'scale(1)';
+                            });
+                            
+                            // 移除可能存在的固定width和height属性
+                            img.removeAttribute('width');
+                            img.removeAttribute('height');
+                            
+                            console.log('已自动调整粘贴图片尺寸');
+                        }
+                    });
+                }, 100);
+            });
+
             // 初始化第一个文本块
             function initializeFirstTextBlock() {
                 const firstTextBlock = document.querySelector('.text-block');
@@ -3014,7 +3116,22 @@
                             img.src = e.target.result;
                             img.alt = '文章图片';
                             img.style.maxWidth = '100%';
+                            img.style.height = 'auto';
+                            img.style.maxHeight = '400px';
+                            img.style.objectFit = 'contain';
                             img.style.borderRadius = '8px';
+                            img.style.cursor = 'pointer';
+                            img.style.transition = 'transform 0.2s ease';
+                            img.style.display = 'block';
+                            img.style.margin = '0 auto';
+                            
+                            // 添加悬停效果
+                            img.addEventListener('mouseenter', function() {
+                                this.style.transform = 'scale(1.02)';
+                            });
+                            img.addEventListener('mouseleave', function() {
+                                this.style.transform = 'scale(1)';
+                            });
                             
                             // 清空内容块并添加图片
                             imageBlock.innerHTML = '';
