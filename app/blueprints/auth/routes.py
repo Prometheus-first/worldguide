@@ -439,6 +439,13 @@ def articles():
             # 确保_id是字符串，以便在模板中使用
             article['_id'] = str(article['_id'])
             
+            # 如果没有封面图片，尝试从内容中提取第一张图片
+            if not article.get('cover_image') and article.get('content'):
+                soup = BeautifulSoup(article['content'], 'html.parser')
+                first_img = soup.find('img')
+                if first_img and first_img.get('src'):
+                    article['cover_image'] = first_img['src']
+            
             # 如果没有文章摘要，可以从内容生成
             if 'excerpt' not in article:
                 # 从内容移除HTML标签并截取前150个字符作为摘要
@@ -476,6 +483,13 @@ def user_center():
         # 处理文章数据
         for article in user_articles:
             article['_id'] = str(article['_id'])
+            
+            # 如果没有封面图片，尝试从内容中提取第一张图片
+            if not article.get('cover_image') and article.get('content'):
+                soup = BeautifulSoup(article['content'], 'html.parser')
+                first_img = soup.find('img')
+                if first_img and first_img.get('src'):
+                    article['cover_image'] = first_img['src']
             
             # 生成摘要
             if 'excerpt' not in article and article.get('content'):

@@ -278,6 +278,24 @@
             height: 100%;
             object-fit: cover;
             transition: transform 0.8s;
+            opacity: 0;
+            animation: fadeIn 0.5s ease-in-out 0.2s forwards;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(1.05);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        .article-image img.error {
+            opacity: 0.7;
+            filter: grayscale(20%);
         }
         
         .article-card:hover .article-image img {
@@ -508,12 +526,15 @@
             <a href="/auth/article/{{ article._id }}" class="article-card" style="text-decoration:none;">
                 <div class="article-image">
                     {% if article.cover_image %}
-                    <img src="{{ article.cover_image }}" alt="{{ article.title }}">
+                    <img src="{{ article.cover_image }}" alt="{{ article.title }}" onerror="this.src='{{ url_for('static', filename='images/default-article.svg') }}'">
                     {% else %}
-                    <img src="{{ url_for('static', filename='images/default-article.jpg') }}" alt="{{ article.title }}">
+                    <img src="{{ url_for('static', filename='images/default-article.svg') }}" alt="{{ article.title }}">
                     {% endif %}
                 </div>
                 <div class="article-content">
+                    {% if article.category %}
+                    <span class="article-category">{{ article.category }}</span>
+                    {% endif %}
                     <h3 class="article-title">{{ article.title }}</h3>
                     <p class="article-excerpt">{{ article.excerpt }}</p>
                     <div class="article-meta">
@@ -603,6 +624,34 @@
                         window.location.href = href;
                     }
                 });
+            });
+            
+            // 处理图片加载
+            setupImageLoading();
+        }
+        
+        // 设置图片加载处理
+        function setupImageLoading() {
+            const images = document.querySelectorAll('.article-image img');
+            
+            images.forEach(img => {
+                // 图片加载成功时的处理
+                img.addEventListener('load', function() {
+                    this.style.opacity = '1';
+                });
+                
+                // 图片加载失败时的处理
+                img.addEventListener('error', function() {
+                    console.log('图片加载失败，使用默认图片:', this.src);
+                    this.classList.add('error');
+                    this.src = "{{ url_for('static', filename='images/default-article.svg') }}";
+                    this.style.opacity = '1';
+                });
+                
+                // 如果图片已经加载完成（缓存情况）
+                if (img.complete) {
+                    img.style.opacity = '1';
+                }
             });
         }
     </script>
